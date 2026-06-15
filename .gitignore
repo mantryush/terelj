@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+npm-debug.log*
+
+# Local-only data and uploaded files for future SQLite/files MVP.
+data/
+storage/
+
+# Image-slot sidecar is demo/editor state, not source.
+.image-slots.state.json

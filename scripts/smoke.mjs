@@ -1,0 +1,33 @@
+import { readFileSync } from 'node:fs';
+
+const files = [
+  'design_handoff_terelj/README.md',
+  'design_handoff_terelj/BACKEND_SPEC.md',
+  'design_handoff_terelj/prototype/index.html',
+  'design_handoff_terelj/prototype/store.jsx',
+  'design_handoff_terelj/prototype/app.jsx',
+  'design_handoff_terelj/prototype/landing.jsx',
+  'design_handoff_terelj/prototype/booking.jsx',
+  'design_handoff_terelj/prototype/checkout.jsx',
+  'design_handoff_terelj/prototype/reception.jsx',
+  'design_handoff_terelj/prototype/admin.jsx',
+  'design_handoff_terelj/prototype/guide.jsx',
+  'design_handoff_terelj/prototype/styles.css'
+];
+
+for (const file of files) {
+  const text = readFileSync(file, 'utf8');
+  if (!text.trim()) throw new Error(`${file} is empty`);
+}
+
+const css = readFileSync('design_handoff_terelj/prototype/styles.css', 'utf8');
+for (const token of ['--paper:      #F1E7D2', '--rust:       #B8472A', '--st-hold-bg: #F3E2B5', '@media (max-width: 980px)']) {
+  if (!css.includes(token)) throw new Error(`Missing CSS token/check: ${token}`);
+}
+
+const store = readFileSync('design_handoff_terelj/prototype/store.jsx', 'utf8');
+for (const check of ['const GERS = [', 'const SERVICES = [', 'statusForRange', 'walkIn']) {
+  if (!store.includes(check)) throw new Error(`Missing store check: ${check}`);
+}
+
+console.log('Smoke checks passed');

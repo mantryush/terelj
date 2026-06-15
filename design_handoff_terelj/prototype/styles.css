@@ -1,0 +1,349 @@
+/* ============================================================
+   ТЭРЭЛЖ — Warm Mongolian nomadic design system
+   ============================================================ */
+
+:root {
+  /* --- Warm felt / parchment ground --- */
+  --paper:      #F1E7D2;
+  --paper-2:    #E7D9BD;
+  --paper-3:    #DDCBA8;
+  --card:       #FBF6EA;
+  --card-2:     #F6EEDB;
+
+  /* --- Ink --- */
+  --ink:        #2A2017;
+  --ink-2:      #5A4A38;
+  --ink-3:      #897154;
+  --ink-faint:  #B6A488;
+
+  /* --- Accents (Mongol palette) --- */
+  --rust:       #B8472A;   /* terracotta red — primary */
+  --rust-deep:  #8F3219;
+  --rust-soft:  #E9C4B4;
+  --gold:       #C99536;   /* amber / brass */
+  --gold-deep:  #A87723;
+  --gold-soft:  #EAD7A8;
+  --sky:        #2E6E8E;   /* Мөнх хөх тэнгэр — eternal blue sky */
+  --sky-soft:   #C0D6DF;
+  --pine:       #5C6E45;   /* steppe green */
+  --pine-soft:  #CBD3B6;
+  --plum:       #6E4A63;
+
+  /* --- Status (booking) --- */
+  --st-free:    #5C6E45;   /* available — green */
+  --st-free-bg: #DCE5C6;
+  --st-hold:    #C99536;   /* held 30 min — amber */
+  --st-hold-bg: #F3E2B5;
+  --st-web:     #B8472A;   /* booked via web — rust */
+  --st-web-bg:  #ECC9BB;
+  --st-walkin:  #2E6E8E;   /* reception / walk-in — blue */
+  --st-walkin-bg:#C4DAE2;
+  --st-stay:    #6E4A63;   /* checked-in / occupied — plum */
+  --st-stay-bg: #DBC9D6;
+
+  /* --- Lines & surfaces --- */
+  --line:       #D8C6A4;
+  --line-soft:  #E6D9BE;
+  --line-ink:   #C9B58E;
+
+  /* --- Type --- */
+  --serif: 'Cormorant Garamond', 'Times New Roman', serif;
+  --sans:  'Manrope', -apple-system, 'Segoe UI', sans-serif;
+
+  /* --- Radii --- */
+  --r-sm: 8px;
+  --r:    14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  /* --- Shadow --- */
+  --sh-sm: 0 1px 2px rgba(60,40,20,0.06), 0 2px 8px rgba(60,40,20,0.05);
+  --sh:    0 4px 14px rgba(60,40,20,0.10), 0 1px 3px rgba(60,40,20,0.08);
+  --sh-lg: 0 24px 60px rgba(50,32,14,0.20), 0 6px 18px rgba(50,32,14,0.10);
+  --sh-rust: 0 8px 22px rgba(184,71,42,0.30);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Felt-grain texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.05; }
+p { margin: 0; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+
+::selection { background: var(--gold-soft); color: var(--ink); }
+
+/* --- Display type --- */
+.display {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.0;
+}
+.serif { font-family: var(--serif); }
+
+.eyebrow {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 15px;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: transform .14s ease, box-shadow .14s ease, background .14s ease, opacity .14s ease, border-color .14s ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: var(--rust);
+  color: #FCF3EC;
+  box-shadow: var(--sh-rust);
+}
+.btn-primary:hover { background: var(--rust-deep); transform: translateY(-1px); }
+.btn-gold {
+  background: var(--gold);
+  color: #2A2017;
+  box-shadow: 0 8px 20px rgba(201,149,54,0.32);
+}
+.btn-gold:hover { background: var(--gold-deep); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-ink);
+}
+.btn-ghost:hover { background: var(--card-2); border-color: var(--ink-3); }
+.btn-dark {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-dark:hover { background: #1c150e; transform: translateY(-1px); }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+.btn-lg { padding: 15px 30px; font-size: 17px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-block { width: 100%; }
+
+/* ============================================================
+   Cards / surfaces
+   ============================================================ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.divider-line { height: 1px; background: var(--line); border: 0; }
+
+/* Status dot */
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  display: inline-block; flex: none;
+}
+.dot-free   { background: var(--st-free); }
+.dot-hold   { background: var(--st-hold); }
+.dot-web    { background: var(--st-web); }
+.dot-walkin { background: var(--st-walkin); }
+.dot-stay   { background: var(--st-stay); }
+
+.pulse { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(201,149,54,0.5); }
+  50%     { box-shadow: 0 0 0 7px rgba(201,149,54,0); }
+}
+
+/* ============================================================
+   Mongolian ornament — улзий хээ (endless knot) repeating band
+   ============================================================ */
+.khee-band {
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16' viewBox='0 0 48 16'%3E%3Cg fill='none' stroke='%23B8472A' stroke-width='1.6'%3E%3Cpath d='M0 8h6v-6h12v12h12V2h12v6h6'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: 0.5;
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--paper-2); }
+::-webkit-scrollbar-thumb { background: var(--line-ink); border-radius: 6px; border: 3px solid var(--paper-2); }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* ============================================================
+   Layout helpers
+   ============================================================ */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+.wrap-narrow { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+.row { display: flex; align-items: center; }
+.col { display: flex; flex-direction: column; }
+.gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
+.grow { flex: 1; }
+.muted { color: var(--ink-2); }
+.faint { color: var(--ink-3); }
+.center { text-align: center; }
+.mono { font-variant-numeric: tabular-nums; }
+
+/* Fade-in */
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.rise { animation: riseIn .6s cubic-bezier(.2,.7,.2,1) both; }
+
+/* Spinner */
+.spin { animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* App root scoping */
+#root { position: relative; z-index: 1; }
+
+/* ============================================================
+   Responsive app polish
+   ============================================================ */
+@media (max-width: 980px) {
+  .wrap, .wrap-narrow { padding-left: 18px; padding-right: 18px; }
+  .landing-hero-grid,
+  .map-teaser-grid,
+  .booking-layout,
+  .checkout-layout,
+  .reception-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .detail-card,
+  .checkout-summary {
+    position: static !important;
+    top: auto !important;
+    max-height: none !important;
+  }
+  .stat-grid,
+  .how-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .admin-layout {
+    align-items: stretch !important;
+    flex-direction: column;
+  }
+  .admin-layout > .col {
+    width: 100% !important;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .admin-layout > .col button {
+    white-space: nowrap;
+    flex: none;
+  }
+}
+
+@media (max-width: 760px) {
+  html, body { font-size: 15px; }
+  .app-header-inner {
+    height: auto !important;
+    min-height: 66px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    flex-wrap: wrap;
+  }
+  .guest-nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .role-label { display: none; }
+  .role-switch button {
+    width: 36px;
+    height: 34px;
+    justify-content: center;
+    padding: 0 !important;
+  }
+  .btn-lg {
+    padding: 13px 20px;
+    font-size: 16px;
+  }
+  .landing-hero-grid {
+    padding-top: 42px !important;
+    gap: 30px !important;
+  }
+  .stat-grid,
+  .how-grid,
+  .guide-info-grid,
+  .services-grid,
+  .amenity-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .guest-row,
+  .admin-price-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .checkout-layout,
+  .reception-layout,
+  .booking-layout {
+    gap: 18px !important;
+  }
+  .card {
+    border-radius: var(--r);
+  }
+}
+
+@media (max-width: 520px) {
+  .wrap, .wrap-narrow { padding-left: 14px; padding-right: 14px; }
+  .chip { font-size: 12px; padding: 5px 10px; }
+  .display { letter-spacing: 0; }
+  .row[style*="justify-content:space-between"] {
+    min-width: 0;
+  }
+  input[type="date"] { min-width: 0; }
+}
