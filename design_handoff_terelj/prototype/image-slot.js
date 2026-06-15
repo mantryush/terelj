@@ -5,11 +5,9 @@
  *
  * Drop this into a deck, mockup, or page wherever you want the user to
  * supply an image. You control the slot's shape and size; the user fills it
- * by dragging an image file onto it (or clicking to browse). The dropped
- * image persists across reloads via a .image-slots.state.json sidecar —
- * same read-via-fetch / write-via-window.omelette pattern as
- * design_canvas.jsx, so the filled slot shows on share links, downloaded
- * zips, and PPTX export. Outside the omelette runtime the slot is read-only.
+ * by dragging an image file onto it (or clicking to browse). In the public
+ * demo it persists in browser localStorage; in the omelette runtime it can
+ * also persist through the .image-slots.state.json sidecar.
  *
  * The host bridge only allows sidecar writes at the project root, so the
  * HTML that uses this component is assumed to live at the project root too
@@ -50,6 +48,7 @@
 
 (() => {
   const STATE_FILE = '.image-slots.state.json';
+  const LS_KEY = 'terelj.imageSlots.v1';
   // 2× a ~600px slot in a 1920-wide deck — retina-sharp without making the
   // sidecar enormous. A 1200px WebP at q=0.85 is ~150-300KB.
   const MAX_DIM = 1200;
@@ -75,6 +74,10 @@
 
   function load() {
     if (loadP) return loadP;
+    try {
+      const local = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      if (local && typeof local === 'object') slots = Object.assign({}, local, slots);
+    } catch {}
     loadP = fetch(STATE_FILE)
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
@@ -107,6 +110,7 @@
   let saving = false;
   let saveDirty = false;
   function save() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(slots)); } catch {}
     if (saving) { saveDirty = true; return; }
     const w = window.omelette && window.omelette.writeFile;
     if (!w) return;
@@ -203,13 +207,10 @@
     '  transition:border-color .12s}' +
     ':host([data-over]) .ring{border-color:#c96442}' +
     ':host([data-filled]) .ring{display:none}' +
-    // Controls sit BELOW the mask (top:100%), absolutely positioned so the
-    // author-declared slot height is unaffected. The gap is padding, not a
-    // top offset, so the hover target stays contiguous with the frame.
-    '.ctl{position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:8px;' +
+    '.ctl{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);' +
     '  display:flex;gap:6px;opacity:0;pointer-events:none;transition:opacity .12s;z-index:2;' +
     '  white-space:nowrap}' +
-    ':host([data-filled][data-editable]:hover) .ctl,:host([data-reframe]) .ctl' +
+    ':host([data-filled][data-editable]) .ctl,:host([data-reframe]) .ctl' +
     '  {opacity:1;pointer-events:auto}' +
     '.ctl button{appearance:none;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;' +
     '  background:rgba(0,0,0,.65);color:#fff;font:11px/1 system-ui,-apple-system,sans-serif;' +
@@ -592,8 +593,9 @@
       this._ring.style.borderRadius = mask ? '' : radius;
       this._ring.style.display = mask ? 'none' : '';
 
-      // Controls and reframe entry gate on this so share links stay read-only.
-      const editable = !!(window.omelette && window.omelette.writeFile);
+      // Public demo stays editable through localStorage; omelette can also
+      // write the sidecar when available.
+      const editable = true;
       this.toggleAttribute('data-editable', editable);
       this._sub.style.display = editable ? '' : 'none';
 
