@@ -11,7 +11,7 @@ const ACCENTS = {
 };
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "landingVariant": "split",
+  "landingVariant": "center",
   "planVariant": "map",
   "accent": "terracotta"
 }/*EDITMODE-END*/;
