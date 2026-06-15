@@ -13,7 +13,7 @@ const ACCENTS = {
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "landingVariant": "center",
   "planVariant": "map",
-  "accent": "terracotta"
+  "accent": "sky"
 }/*EDITMODE-END*/;
 
 function Header({ lang, setLang, t, route, go }){
