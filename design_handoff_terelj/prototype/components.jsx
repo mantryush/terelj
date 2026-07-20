@@ -191,6 +191,7 @@ function DateField({ value, onChange, min, label }){
 function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete, min, lang='mn' }){
   const bookings = useBookings().all();
   const rootRef = useRef(null);
+  const popoverRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState('dates');
   const [phase, setPhase] = useState('checkin');
@@ -205,12 +206,22 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
   const freeForRange = (start,end)=>GERS.filter(g=>!bookings.some(b=>activeStatuses.includes(b.status) && b.gerId===g.id && overlaps(start,end,b.checkIn,b.checkOut))).length;
 
   useEffect(()=>{
-    const close = (e)=>{ if(rootRef.current && !rootRef.current.contains(e.target)) setOpen(false); };
+    const close = (e)=>{
+      const inTrigger=rootRef.current&&rootRef.current.contains(e.target);
+      const inPopover=popoverRef.current&&popoverRef.current.contains(e.target);
+      if(!inTrigger&&!inPopover) setOpen(false);
+    };
     const esc = (e)=>{ if(e.key==='Escape') setOpen(false); };
     document.addEventListener('mousedown', close);
     document.addEventListener('keydown', esc);
     return ()=>{ document.removeEventListener('mousedown', close); document.removeEventListener('keydown', esc); };
   }, []);
+  useEffect(()=>{
+    if(!open) return;
+    const previous=document.body.style.overflow;
+    document.body.style.overflow='hidden';
+    return ()=>{ document.body.style.overflow=previous; };
+  },[open]);
 
   const openAt = (nextPhase)=>{
     setRangeError('');
@@ -325,10 +336,10 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
           <strong><Icons.cal size={16}/>{fmtDate(checkIn,lang)} — {fmtDate(checkOut,lang)} · {nightsBetween(checkIn,checkOut)} {lang==='en'?'nights':'хоног'}</strong>
         </button>
       </div>
-      {open && (
+      {open && ReactDOM.createPortal((
         <>
         <div className="range-backdrop" onMouseDown={()=>setOpen(false)}></div>
-        <div className="range-popover" role="dialog" aria-modal="true" aria-label={lang==='en'?'Choose dates':'Огноо сонгох'}>
+        <div className="range-popover" ref={popoverRef} role="dialog" aria-modal="true" aria-label={lang==='en'?'Choose dates':'Огноо сонгох'}>
           <div className="range-mode-tabs">
             <button type="button" className={mode==='dates'?'is-active':''} onClick={()=>setMode('dates')}>{lang==='en'?'Dates':'Огноо'}</button>
             <button type="button" className={mode==='flexible'?'is-active':''} onClick={()=>setMode('flexible')}>{lang==='en'?'Flexible':'Уян хатан'}</button>
@@ -381,7 +392,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
           )}
         </div>
         </>
-      )}
+      ),document.body)}
     </div>
   );
 }

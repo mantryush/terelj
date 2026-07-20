@@ -125,14 +125,17 @@ function InlineBookingExplorer({ lang, checkIn, checkOut, guests, go, showToast 
         </div>
         <div className={`inline-booking-layout ${selected?'has-detail':''}`}>
           <div className="inline-map-column">
-            <div className="inline-map-top"><Legend lang={lang} counts={counts}/><span>{lang==='en'?'Hover for price · click for details':'Үнэ харах бол дээр нь аваач · дэлгэрэнгүйг дарах'}</span></div>
+            <div className="inline-map-top"><Legend lang={lang} counts={counts}/><span className="desktop-map-hint">{lang==='en'?'Hover for price · click for details':'Үнэ харах бол дээр нь аваач · дэлгэрэнгүйг дарах'}</span><span className="mobile-map-hint">{lang==='en'?'Tap a ger marker to see photos, price and reserve':'Гэрийн тэмдэг дээр нэг дараад зураг, үнэ, захиалгаа харна'}</span></div>
             <PlanMap statusOf={statusOf} selected={selected} onSelect={setSelected} lang={lang}/>
           </div>
           {selected && (
+            <>
+            <button className="inline-detail-backdrop" aria-label={lang==='en'?'Close details':'Дэлгэрэнгүй хаах'} onClick={()=>setSelected(null)}></button>
             <aside className="card inline-ger-detail rise">
               <GerDetail gerId={selected} status={statusOf(selected)} checkIn={checkIn} checkOut={checkOut} guests={guests} lang={lang}
                 onHold={doHold} onClose={()=>setSelected(null)}/>
             </aside>
+            </>
           )}
         </div>
       </div>

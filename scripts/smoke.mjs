@@ -31,7 +31,7 @@ for (const check of ['const GERS = [', 'const SERVICES = [', 'statusForRange', '
 }
 
 const components = readFileSync('design_handoff_terelj/prototype/components.jsx', 'utf8');
-for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх гэр захиалгатай']) {
+for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'ReactDOM.createPortal', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх гэр захиалгатай']) {
   if (!components.includes(check)) throw new Error(`Missing brand/calendar check: ${check}`);
 }
 

@@ -352,7 +352,9 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .inline-map-column { min-width:0; }
 .inline-map-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
 .inline-map-top > span { color:var(--ink-3); font-size:11px; font-weight:700; }
+.mobile-map-hint { display:none; }
 .inline-ger-detail { position:sticky; top:84px; max-height:calc(100vh - 104px); overflow:auto; padding:16px; box-shadow:var(--sh-lg); }
+.inline-detail-backdrop { display:none; }
 .ger-hover-card {
   position:absolute;
   z-index:9;
@@ -848,7 +850,45 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .inline-booking-section { padding: 46px 0 54px; }
   .inline-booking-heading { align-items: flex-start; }
   .inline-map-top { align-items: flex-start; flex-direction: column; }
+  .desktop-map-hint { display:none; }
+  .mobile-map-hint { display:block; }
   .ger-hover-card { display: none; }
+  .ger-marker { min-width: 46px; min-height: 46px; margin-left: -7px; margin-top: -7px; }
+  .ger-marker-dot { width: 42px !important; height: 42px !important; }
+  .inline-detail-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: block;
+    border: 0;
+    background: rgba(7,29,55,.46);
+    backdrop-filter: blur(2px);
+  }
+  .inline-ger-detail {
+    position: fixed !important;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 121;
+    width: 100%;
+    max-height: 78vh !important;
+    padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0 !important;
+    box-shadow: 0 -18px 50px rgba(7,29,55,.28);
+    overflow: auto;
+  }
+  .inline-ger-detail::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: block;
+    width: 42px;
+    height: 5px;
+    margin: -8px auto 10px;
+    border-radius: 999px;
+    background: var(--line-ink);
+  }
   .landing-hero-grid {
     padding-top: 42px !important;
     gap: 30px !important;

@@ -7,11 +7,11 @@ function GerMarker({ g, status, selected, onClick, onHover, onLeave, lang }){
   const c = {free:'var(--st-free)',hold:'var(--st-hold)',web:'var(--st-web)',walkin:'var(--st-walkin)',stay:'var(--st-stay)'}[status];
   const isFree = status==='free';
   return (
-    <button onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave} onFocus={onHover} onBlur={onLeave} title={gerName(g.id,lang)}
+    <button className="ger-marker" onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave} onFocus={onHover} onBlur={onLeave} title={gerName(g.id,lang)}
       style={{position:'absolute', left:`${g.x}%`, top:`${g.y}%`, transform:'translate(-50%,-50%)',
         border:'none', background:'transparent', cursor:'pointer', zIndex: selected?6:3, padding:0}}>
       <div className="row" style={{position:'relative', justifyContent:'center', flexDirection:'column', alignItems:'center', gap:3}}>
-        <div className={status==='hold'?'pulse':''} style={{
+        <div className={`ger-marker-dot ${status==='hold'?'pulse':''}`} style={{
           width: selected?40:32, height: selected?40:32, borderRadius:'50%',
           background: c, display:'flex', alignItems:'center', justifyContent:'center',
           boxShadow: selected? `0 0 0 4px var(--paper), 0 0 0 6px ${c}, 0 6px 16px rgba(0,0,0,0.3)` : '0 3px 8px rgba(0,0,0,0.28)',
