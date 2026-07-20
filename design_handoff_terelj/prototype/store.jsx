@@ -27,19 +27,36 @@ function money(n){ return '₮' + n.toLocaleString('en-US'); }
    x,y = percent position on the grounds map
    ============================================================ */
 const GER_TYPES = {
-  standard: { mn:'Стандарт гэр', en:'Standard Ger', cap:4, price:120000, color:'#F29A1F' },
+  couple: { mn:'Хосын ортой гэр', en:'Couple Ger', cap:2, price:120000, color:'#F29A1F' },
+  fourbed: { mn:'4 ортой гэр', en:'Four-bed Ger', cap:4, price:120000, color:'#4FA6C4' },
 };
 
 const GERS = [
-  { id:'E1', type:'standard', name:'Гэр 1', x:25, y:39 },
-  { id:'E2', type:'standard', name:'Гэр 2', x:39, y:35 },
-  { id:'E3', type:'standard', name:'Гэр 3', x:53, y:38 },
-  { id:'E4', type:'standard', name:'Гэр 4', x:67, y:35 },
-  { id:'E5', type:'standard', name:'Гэр 5', x:32, y:58 },
-  { id:'E6', type:'standard', name:'Гэр 6', x:46, y:55 },
-  { id:'E7', type:'standard', name:'Гэр 7', x:60, y:58 },
-  { id:'E8', type:'standard', name:'Гэр 8', x:74, y:54 },
+  { id:'E1', type:'couple', name:'Гэр 1', x:25, y:39 },
+  { id:'E2', type:'couple', name:'Гэр 2', x:39, y:35 },
+  { id:'E3', type:'couple', name:'Гэр 3', x:53, y:38 },
+  { id:'E4', type:'couple', name:'Гэр 4', x:67, y:35 },
+  { id:'E5', type:'fourbed', name:'Гэр 5', x:32, y:58 },
+  { id:'E6', type:'fourbed', name:'Гэр 6', x:46, y:55 },
+  { id:'E7', type:'fourbed', name:'Гэр 7', x:60, y:58 },
+  { id:'E8', type:'fourbed', name:'Гэр 8', x:74, y:54 },
 ];
+
+const GER_MEDIA = {
+  couple: [
+    'assets/ger-couple-interior.webp',
+    'assets/ger-door-view.webp',
+    'assets/camp-night-terrace.webp',
+    'assets/camp-main-terrace.webp',
+  ],
+  fourbed: [
+    'assets/ger-four-bed-interior.webp',
+    'assets/ger-door-view.webp',
+    'assets/camp-main-terrace.webp',
+    'assets/camp-night-terrace.webp',
+  ],
+};
+function gerMedia(id){ const g=gerById(id); return g ? GER_MEDIA[g.type] : []; }
 
 function gerById(id){ return GERS.find(g=>g.id===id); }
 function gerMeta(id){ const g=gerById(id); return g ? GER_TYPES[g.type] : null; }
@@ -51,7 +68,8 @@ function gerName(id, lang){
 
 /* amenities per type */
 const AMEN = {
-  standard: [['stove','Зуух / Stove'],['bed','4 ор / 4 beds'],['wifi','Wi-Fi'],['fire','Гадаа гал / Fire pit']],
+  couple: [['stove','Зуух / Stove'],['bed','Хосын ор / Queen bed'],['wifi','Wi-Fi'],['fire','Гадаа гал / Fire pit']],
+  fourbed: [['stove','Зуух / Stove'],['bed','4 тусдаа ор / 4 beds'],['wifi','Wi-Fi'],['fire','Гадаа гал / Fire pit']],
 };
 
 /* extra services */
@@ -282,9 +300,9 @@ function saveType(type, patch){
 
 /* expose */
 Object.assign(window, {
-  TJ, GERS, GER_TYPES, AMEN, SERVICES, saveType,
+  TJ, GERS, GER_TYPES, GER_MEDIA, AMEN, SERVICES, saveType,
   useBookings, useLang, tr,
-  gerById, gerMeta, gerPrice, gerName,
+  gerById, gerMeta, gerPrice, gerName, gerMedia,
   ymd, parseYMD, addDays, todayStr, nightsBetween, overlaps, fmtDate, money,
   WD_MN, WD_EN, MO_MN, MO_EN, HOLD_MIN,
 });

@@ -252,6 +252,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 
 .landing-hero { isolation: isolate; background: var(--sky); }
+.real-photo { display:block; object-fit:cover; }
+.hero-cover { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 72%; }
 .landing-hero-content > .col { text-shadow: 0 2px 18px rgba(5,24,45,.26); }
 .quick-search {
   position: relative;
@@ -323,6 +325,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .type-card { position: relative; border-color: rgba(11,42,80,.10); transition: transform .2s ease, box-shadow .2s ease; }
 .type-card::before { content:''; position:absolute; inset:0 0 auto; z-index:3; height:5px; background:var(--sky); }
+.type-card-couple::before { background:var(--gold); }
+.type-card-fourbed::before { background:var(--sky); }
 .type-card-family::before { background:var(--gold); }
 .type-card-vip::before { background:var(--plum); }
 .type-card-luxe::before { background:var(--sky); }
@@ -375,6 +379,10 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .ger-hover-card strong { overflow:hidden; font-size:13px; text-overflow:ellipsis; white-space:nowrap; }
 .ger-hover-card span { color:var(--ink-3); font-size:10px; }
 .ger-hover-card b { margin-top:4px; color:var(--rust); font-size:11px; }
+.gallery-thumbs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; padding:10px 0; }
+.gallery-thumb { width:100%; height:64px; padding:0; overflow:hidden; border:2px solid transparent; border-radius:9px; background:transparent; }
+.gallery-thumb.is-active { border-color:var(--rust); }
+.gallery-thumb img { width:100%; height:100%; }
 
 .range-picker {
   position: relative;
@@ -833,6 +841,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .range-flex-option-list { grid-template-columns: 1fr; }
   .range-flex-options > div:first-child { align-items: flex-start; flex-direction: column; }
   .landing-hero { min-height: 720px !important; }
+  .hero-cover { object-position:center 78%; }
   .landing-hero-content { padding-top: 54px !important; padding-bottom: 74px !important; }
   .quick-search {
     grid-template-columns: 1fr;

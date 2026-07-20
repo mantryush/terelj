@@ -29,8 +29,12 @@ const store = readFileSync('design_handoff_terelj/prototype/store.jsx', 'utf8');
 for (const check of ['const GERS = [', 'const SERVICES = [', 'statusForRange', 'walkIn']) {
   if (!store.includes(check)) throw new Error(`Missing store check: ${check}`);
 }
-const gerCount = (store.match(/\{ id:'E\d', type:'standard'/g) || []).length;
-if (gerCount !== 8) throw new Error(`Expected exactly 8 standard gers, found ${gerCount}`);
+const coupleCount = (store.match(/\{ id:'E\d', type:'couple'/g) || []).length;
+const fourBedCount = (store.match(/\{ id:'E\d', type:'fourbed'/g) || []).length;
+if (coupleCount !== 4 || fourBedCount !== 4) throw new Error(`Expected 4 couple and 4 four-bed gers, found ${coupleCount}/${fourBedCount}`);
+for (const asset of ['ger-couple-interior.webp','ger-four-bed-interior.webp','ger-door-view.webp','camp-night-terrace.webp','camp-main-terrace.webp','terelj-cover.webp']) {
+  readFileSync(`design_handoff_terelj/prototype/assets/${asset}`);
+}
 
 const components = readFileSync('design_handoff_terelj/prototype/components.jsx', 'utf8');
 for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'ReactDOM.createPortal', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх гэр захиалгатай']) {

@@ -36,8 +36,7 @@ function TypeCard({ tk, type, lang, onBook }){
   return (
     <div className={`card type-card type-card-${type}`} style={{overflow:'hidden', display:'flex', flexDirection:'column'}}>
       <div style={{position:'relative', height:200}}>
-        <image-slot id={`type-${type}`} style={{width:'100%', height:'100%', display:'block'}}
-          shape="rect" placeholder={`${m.mn} — зураг`}></image-slot>
+        <img src={GER_MEDIA[type][0]} alt={lang==='en'?m.en:m.mn} className="real-photo" style={{width:'100%',height:'100%'}}/>
         <span className="chip" style={{position:'absolute', top:12, left:12, background:'rgba(42,32,23,0.78)', color:'var(--paper)', border:'none', backdropFilter:'blur(6px)'}}>
           {count} гэр</span>
       </div>
@@ -175,8 +174,7 @@ function Landing({ lang, t, go, variant='split', showToast }){
       {/* ===== HERO ===== */}
       {variant==='center' ? (
         <section className="landing-hero" style={{position:'relative', minHeight:650, display:'flex', alignItems:'center'}}>
-          <image-slot id="hero-banner" style={{position:'absolute', inset:0, width:'100%', height:'100%'}}
-            shape="rect" placeholder=""></image-slot>
+          <img src="assets/terelj-cover.webp" alt="Мэлхий хад, Тэрэлж" className="hero-cover"/>
           <SteppeScene style={{position:'absolute', inset:0, width:'100%', height:'100%', zIndex:-1}}/>
           <div style={{position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(7,35,66,0.12), rgba(7,35,66,0.72))'}}></div>
           <div className="wrap landing-hero-content" style={{position:'relative', zIndex:2, padding:'72px 28px 130px', width:'100%'}}>
@@ -190,8 +188,7 @@ function Landing({ lang, t, go, variant='split', showToast }){
           {heroText}
           <div className="rise" style={{position:'relative'}}>
             <div style={{borderRadius:'var(--r-lg)', overflow:'hidden', boxShadow:'var(--sh-lg)', border:'1px solid var(--line)', position:'relative', aspectRatio:'4/5'}}>
-              <image-slot id="hero-photo" style={{position:'absolute', inset:0, width:'100%', height:'100%'}}
-                shape="rect" placeholder="Голын эргийн гэр буудлын зураг"></image-slot>
+              <img src="assets/terelj-cover.webp" alt="Мэлхий хад, Тэрэлж" className="real-photo" style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
               <SteppeScene style={{position:'absolute', inset:0, width:'100%', height:'100%', zIndex:-1}}/>
             </div>
             {/* floating live card */}

@@ -65,7 +65,7 @@ function PlanMap({ statusOf, selected, onSelect, lang }){
       ))}
       {hg && hovered!==selected && (
         <div className="ger-hover-card" style={{left:`${Math.min(78,Math.max(22,hg.x))}%`, top:`${hg.y<35?hg.y+10:hg.y-20}%`}}>
-          <image-slot id={`ger-${hg.id}-main`} style={{width:72,height:62,display:'block',borderRadius:10}} shape="rounded" placeholder="зураг"></image-slot>
+          <img src={gerMedia(hg.id)[0]} alt="" className="real-photo" style={{width:72,height:62,borderRadius:10}}/>
           <div><strong>{hg.name}</strong><span>{lang==='en'?GER_TYPES[hg.type].en:GER_TYPES[hg.type].mn} · {GER_TYPES[hg.type].cap} {lang==='en'?'guests':'хүн'}</span><b>{money(GER_TYPES[hg.type].price)} / {lang==='en'?'night':'хоног'}</b></div>
         </div>
       )}
@@ -143,24 +143,20 @@ function GerDetail({ gerId, status, checkIn, checkOut, guests, lang, onHold, onC
   const booking = (status!=='free') ? TJ.bookingFor(gerId, checkIn, checkOut) : null;
   const tooSmall = guests > m.cap;
   const blocked = status!=='free';
+  const media = gerMedia(gerId);
+  const [activeMedia, setActiveMedia] = useState(media[0]);
+  useEffect(()=>setActiveMedia(media[0]),[gerId]);
 
   return (
     <div className="col" style={{gap:0}}>
       {/* gallery */}
       <div style={{position:'relative'}}>
-        <image-slot id={`ger-${gerId}-main`} style={{width:'100%', height:230, display:'block'}} shape="rect" placeholder={`${gerName(gerId,lang)} — гол зураг`}></image-slot>
+        <img src={activeMedia} alt={gerName(gerId,lang)} className="real-photo" style={{width:'100%',height:230}}/>
         <button onClick={onClose} className="row" style={{position:'absolute', top:12, right:12, width:34, height:34, justifyContent:'center', borderRadius:'50%', border:'none', background:'rgba(42,32,23,0.7)', color:'var(--paper)'}}><Icons.x size={18}/></button>
         <div style={{position:'absolute', top:12, left:12}}><StatusBadge status={status} lang={lang}/></div>
       </div>
-      <div className="row" style={{gap:8, padding:'10px 0'}}>
-        <image-slot id={`ger-${gerId}-2`} style={{width:'33%', height:64, display:'block', borderRadius:8}} shape="rounded" placeholder="зураг"></image-slot>
-        <image-slot id={`ger-${gerId}-3`} style={{width:'33%', height:64, display:'block', borderRadius:8}} shape="rounded" placeholder="зураг"></image-slot>
-        <div style={{position:'relative', width:'34%', height:64}}>
-          <image-slot id={`ger-${gerId}-vid`} style={{width:'100%', height:64, display:'block', borderRadius:8}} shape="rounded" placeholder="бичлэг"></image-slot>
-          <div style={{position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', pointerEvents:'none'}}>
-            <span className="row" style={{width:30, height:30, justifyContent:'center', borderRadius:'50%', background:'rgba(42,32,23,0.6)', color:'#fff'}}><Icons.play size={15}/></span>
-          </div>
-        </div>
+      <div className="gallery-thumbs">
+        {media.map((src,i)=><button key={src} className={`gallery-thumb ${activeMedia===src?'is-active':''}`} onClick={()=>setActiveMedia(src)}><img src={src} alt={`${gerName(gerId,lang)} ${i+1}`} className="real-photo"/></button>)}
       </div>
 
       <div className="col" style={{gap:14, paddingTop:6}}>
