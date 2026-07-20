@@ -27,8 +27,8 @@ function money(n){ return '₮' + n.toLocaleString('en-US'); }
    x,y = percent position on the grounds map
    ============================================================ */
 const GER_TYPES = {
-  couple: { mn:'Хосын ортой гэр', en:'Couple Ger', cap:2, price:120000, color:'#F29A1F' },
-  fourbed: { mn:'4 ортой гэр', en:'Four-bed Ger', cap:4, price:120000, color:'#4FA6C4' },
+  couple: { mn:'Хосын ортой гэр', en:'Couple Ger', cap:2, price:250000, color:'#F29A1F' },
+  fourbed: { mn:'4 ортой гэр', en:'Four-bed Ger', cap:4, price:250000, color:'#4FA6C4' },
 };
 
 const GERS = [
