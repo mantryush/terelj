@@ -3,11 +3,11 @@
    ============================================================ */
 var useState = React.useState;
 var useEffect = React.useEffect;
-function GerMarker({ g, status, selected, onClick, lang }){
+function GerMarker({ g, status, selected, onClick, onHover, onLeave, lang }){
   const c = {free:'var(--st-free)',hold:'var(--st-hold)',web:'var(--st-web)',walkin:'var(--st-walkin)',stay:'var(--st-stay)'}[status];
   const isFree = status==='free';
   return (
-    <button onClick={onClick} title={gerName(g.id,lang)}
+    <button onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave} onFocus={onHover} onBlur={onLeave} title={gerName(g.id,lang)}
       style={{position:'absolute', left:`${g.x}%`, top:`${g.y}%`, transform:'translate(-50%,-50%)',
         border:'none', background:'transparent', cursor:'pointer', zIndex: selected?6:3, padding:0}}>
       <div className="row" style={{position:'relative', justifyContent:'center', flexDirection:'column', alignItems:'center', gap:3}}>
@@ -52,6 +52,8 @@ function GroundsBg(){
 
 /* ---------- the interactive plan ---------- */
 function PlanMap({ statusOf, selected, onSelect, lang }){
+  const [hovered, setHovered] = useState(null);
+  const hg = hovered ? gerById(hovered) : null;
   return (
     <div style={{position:'relative', width:'100%', aspectRatio:'4/3', borderRadius:'var(--r-lg)', overflow:'hidden',
       border:'1px solid var(--line)', boxShadow:'var(--sh)',
@@ -62,8 +64,14 @@ function PlanMap({ statusOf, selected, onSelect, lang }){
       <span style={zoneLbl(50,90)}>{lang==='en'?'Camp circle':'Гэрийн тойрог'}</span>
       {GERS.map(g=>(
         <GerMarker key={g.id} g={g} status={statusOf(g.id)} selected={selected===g.id}
-          onClick={()=>onSelect(g.id)} lang={lang}/>
+          onClick={()=>onSelect(g.id)} onHover={()=>setHovered(g.id)} onLeave={()=>setHovered(null)} lang={lang}/>
       ))}
+      {hg && hovered!==selected && (
+        <div className="ger-hover-card" style={{left:`${Math.min(78,Math.max(22,hg.x))}%`, top:`${hg.y<35?hg.y+10:hg.y-20}%`}}>
+          <image-slot id={`ger-${hg.id}-main`} style={{width:72,height:62,display:'block',borderRadius:10}} shape="rounded" placeholder="зураг"></image-slot>
+          <div><strong>{hg.name}</strong><span>{lang==='en'?GER_TYPES[hg.type].en:GER_TYPES[hg.type].mn} · {GER_TYPES[hg.type].cap} {lang==='en'?'guests':'хүн'}</span><b>{money(GER_TYPES[hg.type].price)} / {lang==='en'?'night':'хоног'}</b></div>
+        </div>
+      )}
     </div>
   );
 }

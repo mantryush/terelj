@@ -188,7 +188,7 @@ function DateField({ value, onChange, min, label }){
 }
 
 /* ---------- Airbnb-inspired range date picker ---------- */
-function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='mn' }){
+function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete, min, lang='mn' }){
   const bookings = useBookings().all();
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -235,12 +235,13 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
       setPhase('checkout');
     } else {
       if(freeForRange(checkIn,picked)===0){
-        setRangeError(lang==='en'?'No single stay is available for this whole range. Choose a shorter stay or different dates.':'Энэ бүх хугацаанд бүтнээрээ сул байр алга. Богино хугацаа эсвэл өөр өдрүүд сонгоно уу.');
+        setRangeError(lang==='en'?'No single stay is available for this whole range. Choose a shorter stay or different dates.':'Энэ бүх хугацаанд бүтнээрээ сул гэр алга. Богино хугацаа эсвэл өөр өдрүүд сонгоно уу.');
         return;
       }
       onCheckOut(picked);
       setOpen(false);
       setHovered(null);
+      if(onComplete) setTimeout(onComplete,30);
     }
   };
   const monthTitle = (d)=> lang==='en'
@@ -256,6 +257,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
     onCheckIn(start);
     onCheckOut(end);
     setOpen(false);
+    if(onComplete) setTimeout(onComplete,30);
   };
   const flexibleRanges = (month)=>{
     if(!month) return [];
@@ -304,7 +306,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
               <button key={ds} type="button" disabled={disabled}
                 className={`range-day ${start?'is-start':''} ${end?'is-end':''} ${inRange?'is-range':''} ${soldOut?'is-sold-out':''} ${partial?'is-partial':''}`}
                 onMouseEnter={()=>!disabled&&setHovered(ds)} onFocus={()=>!disabled&&setHovered(ds)} onClick={()=>choose(d)}
-                title={soldOut?(lang==='en'?'Fully reserved':'Бүх байр захиалгатай'):(partial?(lang==='en'?`${free} stays left`:`${free} байр сул`):'')}
+                title={soldOut?(lang==='en'?'Fully reserved':'Бүх гэр захиалгатай'):(partial?(lang==='en'?`${free} stays left`:`${free} гэр сул`):'')}
                 aria-label={`${d.toLocaleDateString(lang==='en'?'en-US':'mn-MN')} · ${soldOut?(lang==='en'?'fully reserved':'дүүрсэн'):(lang==='en'?`${free} available`:`${free} сул`)}`} aria-pressed={start||end}>
                 <span>{d.getDate()}</span>
               </button>
@@ -324,7 +326,9 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
         </button>
       </div>
       {open && (
-        <div className="range-popover rise" role="dialog" aria-label={lang==='en'?'Choose dates':'Огноо сонгох'}>
+        <>
+        <div className="range-backdrop" onMouseDown={()=>setOpen(false)}></div>
+        <div className="range-popover" role="dialog" aria-modal="true" aria-label={lang==='en'?'Choose dates':'Огноо сонгох'}>
           <div className="range-mode-tabs">
             <button type="button" className={mode==='dates'?'is-active':''} onClick={()=>setMode('dates')}>{lang==='en'?'Dates':'Огноо'}</button>
             <button type="button" className={mode==='flexible'?'is-active':''} onClick={()=>setMode('flexible')}>{lang==='en'?'Flexible':'Уян хатан'}</button>
@@ -334,7 +338,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
               <button type="button" className="range-nav range-nav-prev" onClick={()=>moveMonth(-1)} disabled={!canPrev} aria-label="Previous month">‹</button>
               <button type="button" className="range-nav range-nav-next" onClick={()=>moveMonth(1)} aria-label="Next month">›</button>
               <div className="range-months"><Month offset={0}/><Month offset={1}/></div>
-              <div className="range-availability-note"><span className="availability-dot partial"></span>{lang==='en'?'Limited availability':'Цөөн байр үлдсэн'} <span className="availability-dot sold"></span>{lang==='en'?'Fully reserved':'Бүх байр захиалгатай'}</div>
+              <div className="range-availability-note"><span className="availability-dot partial"></span>{lang==='en'?'Limited availability':'Цөөн гэр үлдсэн'} <span className="availability-dot sold"></span>{lang==='en'?'Fully reserved':'Бүх гэр захиалгатай'}</div>
               {rangeError && <div className="range-error"><Icons.bell size={16}/>{rangeError}</div>}
               <div className="range-flex-chips" aria-label={lang==='en'?'Date flexibility':'Огнооны уян хатан байдал'}>
                 {[0,1,2,3,7,14].map(n=><button type="button" key={n} className={flexDays===n?'is-active':''} onClick={()=>setFlexDays(n)}>{n===0?(lang==='en'?'Exact dates':'Яг сонгосон'):`± ${n} ${lang==='en'?(n===1?'day':'days'):'өдөр'}`}</button>)}
@@ -376,6 +380,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
             </div>
           )}
         </div>
+        </>
       )}
     </div>
   );

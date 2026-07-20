@@ -31,11 +31,18 @@ for (const check of ['const GERS = [', 'const SERVICES = [', 'statusForRange', '
 }
 
 const components = readFileSync('design_handoff_terelj/prototype/components.jsx', 'utf8');
-for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх байр захиалгатай']) {
+for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх гэр захиалгатай']) {
   if (!components.includes(check)) throw new Error(`Missing brand/calendar check: ${check}`);
 }
 
 const booking = readFileSync('design_handoff_terelj/prototype/booking.jsx', 'utf8');
-if (!booking.includes('<RangeDatePicker')) throw new Error('Booking page is missing the range date picker');
+for (const check of ['<RangeDatePicker', 'ger-hover-card']) {
+  if (!booking.includes(check)) throw new Error(`Booking experience is missing: ${check}`);
+}
+
+const landing = readFileSync('design_handoff_terelj/prototype/landing.jsx', 'utf8');
+for (const check of ['function InlineBookingExplorer', 'id="availability"', '<PlanMap', '<GerDetail']) {
+  if (!landing.includes(check)) throw new Error(`Inline booking experience is missing: ${check}`);
+}
 
 console.log('Smoke checks passed');

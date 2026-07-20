@@ -84,7 +84,7 @@ function QuickBookingSearch({ lang, checkIn, checkOut, setCheckIn, setCheckOut, 
         <span>{lang==='en'?'WHERE':'ХААНА'}</span>
         <strong><Icons.pin size={17}/>{lang==='en'?'Turtle Rock, Terelj':'Мэлхий хад, Тэрэлж'}</strong>
       </div>
-      <RangeDatePicker checkIn={checkIn} checkOut={checkOut} onCheckIn={setCheckIn} onCheckOut={setCheckOut} min={todayStr()} lang={lang}/>
+      <RangeDatePicker checkIn={checkIn} checkOut={checkOut} onCheckIn={setCheckIn} onCheckOut={setCheckOut} onComplete={onSearch} min={todayStr()} lang={lang}/>
       <div className="quick-search-guests">
         <span>{lang==='en'?'WHO':'ХЭДҮҮЛЭЭ'}</span>
         <div><Stepper value={guests} onChange={setGuests} min={1} max={10}/></div>
@@ -97,14 +97,57 @@ function QuickBookingSearch({ lang, checkIn, checkOut, setCheckIn, setCheckOut, 
   );
 }
 
-function Landing({ lang, t, go, variant='split' }){
+function InlineBookingExplorer({ lang, checkIn, checkOut, guests, go, showToast }){
+  const tj = useBookings();
+  const [selected, setSelected] = useState(null);
+  const statusOf = (id)=>tj.statusForRange(id,checkIn,checkOut);
+  const counts=GERS.reduce((a,g)=>{const s=statusOf(g.id);a[s]=(a[s]||0)+1;return a;},{});
+  const compatibleFree=GERS.filter(g=>statusOf(g.id)==='free'&&GER_TYPES[g.type].cap>=guests).length;
+  const doHold = (gerId)=>{
+    const res=TJ.hold({gerId,checkIn,checkOut,channel:'web',guest:{count:guests}});
+    if(res.error){
+      setSelected(null);
+      showToast(lang==='en'?'This ger was just reserved. Choose another available stay.':'Энэ гэрийг сая захиалчихлаа. Өөр сул байр сонгоно уу.','warn');
+      return;
+    }
+    go('checkout',{bookingId:res.booking.id});
+  };
+  return (
+    <section id="availability" className="inline-booking-section">
+      <div className="wrap">
+        <div className="inline-booking-heading">
+          <div>
+            <span className="eyebrow">{lang==='en'?'CHOOSE YOUR STAY':'БАЙРАА СОНГОХ'}</span>
+            <h2 className="serif">{lang==='en'?'Available for your dates':'Таны өдрүүдэд боломжтой байр'}</h2>
+            <p>{fmtDate(checkIn,lang)} — {fmtDate(checkOut,lang)} · {nightsBetween(checkIn,checkOut)} {lang==='en'?'nights':'хоног'} · {guests} {lang==='en'?'guests':'зочин'}</p>
+          </div>
+          <div className="inline-free-count"><strong>{compatibleFree}</strong><span>{lang==='en'?'matching stays':'тохирох сул байр'}</span></div>
+        </div>
+        <div className={`inline-booking-layout ${selected?'has-detail':''}`}>
+          <div className="inline-map-column">
+            <div className="inline-map-top"><Legend lang={lang} counts={counts}/><span>{lang==='en'?'Hover for price · click for details':'Үнэ харах бол дээр нь аваач · дэлгэрэнгүйг дарах'}</span></div>
+            <PlanMap statusOf={statusOf} selected={selected} onSelect={setSelected} lang={lang}/>
+          </div>
+          {selected && (
+            <aside className="card inline-ger-detail rise">
+              <GerDetail gerId={selected} status={statusOf(selected)} checkIn={checkIn} checkOut={checkOut} guests={guests} lang={lang}
+                onHold={doHold} onClose={()=>setSelected(null)}/>
+            </aside>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Landing({ lang, t, go, variant='split', showToast }){
   const tj = useBookings();
   const today = todayStr();
   const [checkIn, setCheckIn] = useState(today);
   const [checkOut, setCheckOut] = useState(addDays(today,1));
   const [guests, setGuests] = useState(2);
   const freeCount = GERS.filter(g=> tj.statusForRange(g.id, checkIn, checkOut)==='free' && GER_TYPES[g.type].cap>=guests).length;
-  const search = ()=>go('book',{checkIn,checkOut,guests});
+  const search = ()=>setTimeout(()=>document.getElementById('availability')?.scrollIntoView({behavior:'smooth',block:'start'}),20);
 
   const heroText = (
     <div className="col rise" style={{gap:22, maxWidth: variant==='center'?720:520, margin: variant==='center'?'0 auto':0}}>
@@ -168,6 +211,8 @@ function Landing({ lang, t, go, variant='split' }){
             guests={guests} setGuests={setGuests} onSearch={search} freeCount={freeCount}/>
         </section>
       )}
+
+      <InlineBookingExplorer lang={lang} checkIn={checkIn} checkOut={checkOut} guests={guests} go={go} showToast={showToast}/>
 
       {/* ===== stat strip ===== */}
       <section className="wrap" style={{padding:'34px 28px'}}>

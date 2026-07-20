@@ -20,6 +20,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 function Header({ lang, setLang, t, route, go }){
   const guestNav = [['home','nav.home'],['book','nav.book'],['guide','nav.guide']];
   const isStaff = route==='reception' || route==='admin';
+  const openBooking = ()=>{ go('home'); setTimeout(()=>document.getElementById('availability')?.scrollIntoView({behavior:'smooth',block:'start'}),40); };
   return (
     <header style={{position:'sticky', top:0, zIndex:50, background:'rgba(247,242,231,0.90)',
       backdropFilter:'blur(16px)', borderBottom:'1px solid var(--line)'}}>
@@ -29,7 +30,7 @@ function Header({ lang, setLang, t, route, go }){
         {!isStaff && (
           <nav className="row guest-nav" style={{gap:4}}>
             {guestNav.map(([v,k])=>(
-              <button key={v} onClick={()=>go(v)} style={{background: route===v?'var(--card)':'transparent',
+              <button key={v} onClick={()=>v==='book'?openBooking():go(v)} style={{background: route===v?'var(--card)':'transparent',
                 border:'none', padding:'8px 16px', borderRadius:'var(--r-pill)', fontWeight:700, fontSize:14.5,
                 color: route===v?'var(--ink)':'var(--ink-2)', cursor:'pointer',
                 boxShadow: route===v?'var(--sh-sm)':'none'}}>{t(k)}</button>
@@ -57,7 +58,7 @@ function Header({ lang, setLang, t, route, go }){
               );
             })}
           </div>
-          {!isStaff && <button className="btn btn-primary btn-sm" onClick={()=>go('book')}>{t('nav.bookNow')}</button>}
+          {!isStaff && <button className="btn btn-primary btn-sm" onClick={openBooking}>{t('nav.bookNow')}</button>}
         </div>
       </div>
     </header>
@@ -65,6 +66,7 @@ function Header({ lang, setLang, t, route, go }){
 }
 
 function Footer({ lang, go }){
+  const openBooking = ()=>{ go('home'); setTimeout(()=>document.getElementById('availability')?.scrollIntoView({behavior:'smooth',block:'start'}),40); };
   return (
     <footer style={{background:'var(--ink)', color:'var(--paper)', padding:'48px 0 30px'}}>
       <div className="wrap">
@@ -77,7 +79,7 @@ function Footer({ lang, go }){
             <div className="col" style={{gap:9}}>
               <span style={{fontWeight:800, fontSize:13, color:'var(--gold)', textTransform:'uppercase', letterSpacing:'0.08em'}}>{lang==='en'?'Book':'Захиалга'}</span>
               {[['book',lang==='en'?'Live map':'Газрын зураг'],['guide',lang==='en'?'Guide':'Заавар']].map(([v,l])=>(
-                <button key={v} onClick={()=>go(v)} style={{background:'none', border:'none', color:'rgba(241,231,210,0.8)', textAlign:'left', cursor:'pointer', fontSize:14, padding:0}}>{l}</button>
+                <button key={v} onClick={()=>v==='book'?openBooking():go(v)} style={{background:'none', border:'none', color:'rgba(241,231,210,0.8)', textAlign:'left', cursor:'pointer', fontSize:14, padding:0}}>{l}</button>
               ))}
             </div>
             <div className="col" style={{gap:9}}>
@@ -129,7 +131,7 @@ function App(){
     <div>
       <Header lang={lang} setLang={setLang} t={t} route={route} go={go}/>
       <main>
-        {route==='home'      && <Landing lang={lang} t={t} go={go} variant={tw.landingVariant}/>}
+        {route==='home'      && <Landing lang={lang} t={t} go={go} variant={tw.landingVariant} showToast={showToast}/>}
         {route==='book'      && <Booking lang={lang} t={t} go={go} planVariant={tw.planVariant} showToast={showToast} initialSearch={params}/>}
         {route==='checkout'  && <Checkout lang={lang} t={t} go={go} bookingId={params.bookingId} showToast={showToast}/>}
         {route==='guide'     && <Guide lang={lang} t={t} go={go}/>}
