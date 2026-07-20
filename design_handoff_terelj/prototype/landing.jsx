@@ -79,12 +79,12 @@ function ServiceTile({ s, lang }){
 
 function QuickBookingSearch({ lang, checkIn, checkOut, setCheckIn, setCheckOut, guests, setGuests, onSearch, freeCount }){
   return (
-    <div className="quick-search rise">
+    <div id="booking-search" className="quick-search rise">
       <div className="quick-search-place">
         <span>{lang==='en'?'WHERE':'ХААНА'}</span>
         <strong><Icons.pin size={17}/>{lang==='en'?'Turtle Rock, Terelj':'Мэлхий хад, Тэрэлж'}</strong>
       </div>
-      <RangeDatePicker checkIn={checkIn} checkOut={checkOut} onCheckIn={setCheckIn} onCheckOut={setCheckOut} onComplete={onSearch} min={todayStr()} lang={lang}/>
+      <RangeDatePicker checkIn={checkIn} checkOut={checkOut} onCheckIn={setCheckIn} onCheckOut={setCheckOut} min={todayStr()} lang={lang}/>
       <div className="quick-search-guests">
         <span>{lang==='en'?'WHO':'ХЭДҮҮЛЭЭ'}</span>
         <div><Stepper value={guests} onChange={setGuests} min={1} max={10}/></div>

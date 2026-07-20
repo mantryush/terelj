@@ -18,9 +18,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 function Header({ lang, setLang, t, route, go }){
-  const guestNav = [['home','nav.home'],['book','nav.book'],['guide','nav.guide']];
+  const guestNav = [['home','nav.home'],['guide','nav.guide']];
   const isStaff = route==='reception' || route==='admin';
-  const openBooking = ()=>{ go('home'); setTimeout(()=>document.getElementById('availability')?.scrollIntoView({behavior:'smooth',block:'start'}),40); };
   return (
     <header style={{position:'sticky', top:0, zIndex:50, background:'rgba(247,242,231,0.90)',
       backdropFilter:'blur(16px)', borderBottom:'1px solid var(--line)'}}>
@@ -30,7 +29,7 @@ function Header({ lang, setLang, t, route, go }){
         {!isStaff && (
           <nav className="row guest-nav" style={{gap:4}}>
             {guestNav.map(([v,k])=>(
-              <button key={v} onClick={()=>v==='book'?openBooking():go(v)} style={{background: route===v?'var(--card)':'transparent',
+              <button key={v} onClick={()=>go(v)} style={{background: route===v?'var(--card)':'transparent',
                 border:'none', padding:'8px 16px', borderRadius:'var(--r-pill)', fontWeight:700, fontSize:14.5,
                 color: route===v?'var(--ink)':'var(--ink-2)', cursor:'pointer',
                 boxShadow: route===v?'var(--sh-sm)':'none'}}>{t(k)}</button>
@@ -58,7 +57,6 @@ function Header({ lang, setLang, t, route, go }){
               );
             })}
           </div>
-          {!isStaff && <button className="btn btn-primary btn-sm" onClick={openBooking}>{t('nav.bookNow')}</button>}
         </div>
       </div>
     </header>
@@ -66,7 +64,7 @@ function Header({ lang, setLang, t, route, go }){
 }
 
 function Footer({ lang, go }){
-  const openBooking = ()=>{ go('home'); setTimeout(()=>document.getElementById('availability')?.scrollIntoView({behavior:'smooth',block:'start'}),40); };
+  const openBooking = ()=>{ go('home'); setTimeout(()=>document.getElementById('booking-search')?.scrollIntoView({behavior:'smooth',block:'center'}),40); };
   return (
     <footer style={{background:'var(--ink)', color:'var(--paper)', padding:'48px 0 30px'}}>
       <div className="wrap">
