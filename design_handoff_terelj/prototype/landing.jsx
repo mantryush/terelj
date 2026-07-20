@@ -34,7 +34,7 @@ function TypeCard({ tk, type, lang, onBook }){
   const m = GER_TYPES[type];
   const count = GERS.filter(g=>g.type===type).length;
   return (
-    <div className="card" style={{overflow:'hidden', display:'flex', flexDirection:'column'}}>
+    <div className={`card type-card type-card-${type}`} style={{overflow:'hidden', display:'flex', flexDirection:'column'}}>
       <div style={{position:'relative', height:200}}>
         <image-slot id={`type-${type}`} style={{width:'100%', height:'100%', display:'block'}}
           shape="rect" placeholder={`${m.mn} — зураг`}></image-slot>
@@ -65,7 +65,7 @@ function TypeCard({ tk, type, lang, onBook }){
 function ServiceTile({ s, lang }){
   const I = Icons[s.icon] || Icons.star;
   return (
-    <div className="row" style={{gap:14, padding:'16px 18px', background:'var(--card)', border:'1px solid var(--line)', borderRadius:'var(--r)'}}>
+    <div className="row service-tile" style={{gap:14, padding:'16px 18px', background:'var(--card)', border:'1px solid var(--line)', borderRadius:'var(--r)'}}>
       <div className="row" style={{justifyContent:'center', width:46, height:46, flex:'none', borderRadius:12, background:'var(--card-2)', color:'var(--rust)'}}>
         <I size={24}/>
       </div>
@@ -77,10 +77,34 @@ function ServiceTile({ s, lang }){
   );
 }
 
+function QuickBookingSearch({ lang, checkIn, checkOut, setCheckIn, setCheckOut, guests, setGuests, onSearch, freeCount }){
+  return (
+    <div className="quick-search rise">
+      <div className="quick-search-place">
+        <span>{lang==='en'?'WHERE':'ХААНА'}</span>
+        <strong><Icons.pin size={17}/>{lang==='en'?'Turtle Rock, Terelj':'Мэлхий хад, Тэрэлж'}</strong>
+      </div>
+      <RangeDatePicker checkIn={checkIn} checkOut={checkOut} onCheckIn={setCheckIn} onCheckOut={setCheckOut} min={todayStr()} lang={lang}/>
+      <div className="quick-search-guests">
+        <span>{lang==='en'?'WHO':'ХЭДҮҮЛЭЭ'}</span>
+        <div><Stepper value={guests} onChange={setGuests} min={1} max={10}/></div>
+      </div>
+      <button className="quick-search-submit" onClick={onSearch}>
+        <Icons.map size={19}/><span>{lang==='en'?'Search':'Хайх'}</span>
+      </button>
+      <span className="quick-search-availability">{lang==='en'?`${freeCount} stays available`:`${freeCount} байр сул`}</span>
+    </div>
+  );
+}
+
 function Landing({ lang, t, go, variant='split' }){
   const tj = useBookings();
   const today = todayStr();
-  const freeCount = GERS.filter(g=> tj.statusForRange(g.id, today, addDays(today,1))==='free').length;
+  const [checkIn, setCheckIn] = useState(today);
+  const [checkOut, setCheckOut] = useState(addDays(today,1));
+  const [guests, setGuests] = useState(2);
+  const freeCount = GERS.filter(g=> tj.statusForRange(g.id, checkIn, checkOut)==='free' && GER_TYPES[g.type].cap>=guests).length;
+  const search = ()=>go('book',{checkIn,checkOut,guests});
 
   const heroText = (
     <div className="col rise" style={{gap:22, maxWidth: variant==='center'?720:520, margin: variant==='center'?'0 auto':0}}>
@@ -91,10 +115,6 @@ function Landing({ lang, t, go, variant='split' }){
       <p style={{fontSize:18, lineHeight:1.55, color: variant==='center'?'rgba(255,253,248,0.9)':'var(--ink-2)', maxWidth:520, margin: variant==='center'?'0 auto':0}}>
         {t('hero.sub')}
       </p>
-      <div className="row gap-3" style={{flexWrap:'wrap', justifyContent: variant==='center'?'center':'flex-start'}}>
-        <button className="btn btn-primary btn-lg" onClick={()=>go('book')}><Icons.map size={19}/> {t('hero.cta')}</button>
-        <button className={`btn btn-lg ${variant==='center'?'btn-gold':'btn-ghost'}`} onClick={()=>go('book')}>{t('hero.cta2')}</button>
-      </div>
       <div className="row gap-3" style={{marginTop:6, justifyContent: variant==='center'?'center':'flex-start'}}>
         <span className="row gap-2" style={{fontSize:13.5, fontWeight:600, color: variant==='center'?'#FFFDF8':'var(--ink-2)'}}>
           <span className="dot dot-free pulse"></span>
@@ -108,12 +128,16 @@ function Landing({ lang, t, go, variant='split' }){
     <div>
       {/* ===== HERO ===== */}
       {variant==='center' ? (
-        <section style={{position:'relative', minHeight:620, display:'flex', alignItems:'center', overflow:'hidden'}}>
+        <section className="landing-hero" style={{position:'relative', minHeight:650, display:'flex', alignItems:'center'}}>
           <image-slot id="hero-banner" style={{position:'absolute', inset:0, width:'100%', height:'100%'}}
             shape="rect" placeholder=""></image-slot>
           <SteppeScene style={{position:'absolute', inset:0, width:'100%', height:'100%', zIndex:-1}}/>
-          <div style={{position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(42,32,23,0.15), rgba(42,32,23,0.62))'}}></div>
-          <div className="wrap" style={{position:'relative', zIndex:2, padding:'90px 28px', width:'100%'}}>{heroText}</div>
+          <div style={{position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(7,35,66,0.12), rgba(7,35,66,0.72))'}}></div>
+          <div className="wrap landing-hero-content" style={{position:'relative', zIndex:2, padding:'72px 28px 130px', width:'100%'}}>
+            {heroText}
+            <QuickBookingSearch lang={lang} checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut}
+              guests={guests} setGuests={setGuests} onSearch={search} freeCount={freeCount}/>
+          </div>
         </section>
       ) : (
         <section className="wrap landing-hero-grid" style={{display:'grid', gridTemplateColumns:'1.05fr 1fr', gap:48, alignItems:'center', padding:'64px 28px 40px'}}>
@@ -135,6 +159,13 @@ function Landing({ lang, t, go, variant='split' }){
               </div>
             </div>
           </div>
+        </section>
+      )}
+
+      {variant!=='center' && (
+        <section className="wrap" style={{padding:'6px 28px 18px'}}>
+          <QuickBookingSearch lang={lang} checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut}
+            guests={guests} setGuests={setGuests} onSearch={search} freeCount={freeCount}/>
         </section>
       )}
 
@@ -165,7 +196,7 @@ function Landing({ lang, t, go, variant='split' }){
         </div>
         <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))', gap:20}}>
           {Object.keys(GER_TYPES).map(type=>(
-            <TypeCard key={type} type={type} lang={lang} onBook={()=>go('book')}/>
+            <TypeCard key={type} type={type} lang={lang} onBook={search}/>
           ))}
         </div>
       </section>

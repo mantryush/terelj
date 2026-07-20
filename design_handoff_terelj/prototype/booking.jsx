@@ -215,12 +215,12 @@ function GerDetail({ gerId, status, checkIn, checkOut, guests, lang, onHold, onC
 /* ============================================================
    Booking page
    ============================================================ */
-function Booking({ lang, t, go, planVariant='map', showToast }){
+function Booking({ lang, t, go, planVariant='map', showToast, initialSearch={} }){
   const tj = useBookings();
   const today = todayStr();
-  const [checkIn, setCheckIn] = useState(today);
-  const [checkOut, setCheckOut] = useState(addDays(today,1));
-  const [guests, setGuests] = useState(2);
+  const [checkIn, setCheckIn] = useState(initialSearch.checkIn||today);
+  const [checkOut, setCheckOut] = useState(initialSearch.checkOut||addDays(today,1));
+  const [guests, setGuests] = useState(initialSearch.guests||2);
   const [filterType, setFilterType] = useState('all');
   const [selected, setSelected] = useState(null);
 

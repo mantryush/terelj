@@ -4,6 +4,7 @@
 var useState = React.useState;
 var useEffect = React.useEffect;
 const ACCENTS = {
+  tenger:     { rust:'#0B2A50', deep:'#061B35', sh:'rgba(11,42,80,0.28)',  label:'Tenger Eleven' },
   terracotta: { rust:'#B8472A', deep:'#8F3219', sh:'rgba(184,71,42,0.30)', label:'Шавар улаан' },
   pine:       { rust:'#5C6E45', deep:'#44542F', sh:'rgba(92,110,69,0.30)',  label:'Тал ногоон' },
   sky:        { rust:'#2E6E8E', deep:'#1F5066', sh:'rgba(46,110,142,0.30)', label:'Тэнгэр хөх' },
@@ -13,14 +14,14 @@ const ACCENTS = {
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "landingVariant": "center",
   "planVariant": "map",
-  "accent": "sky"
+  "accent": "tenger"
 }/*EDITMODE-END*/;
 
 function Header({ lang, setLang, t, route, go }){
   const guestNav = [['home','nav.home'],['book','nav.book'],['guide','nav.guide']];
   const isStaff = route==='reception' || route==='admin';
   return (
-    <header style={{position:'sticky', top:0, zIndex:50, background:'rgba(241,231,210,0.86)',
+    <header style={{position:'sticky', top:0, zIndex:50, background:'rgba(247,242,231,0.90)',
       backdropFilter:'blur(16px)', borderBottom:'1px solid var(--line)'}}>
         <div className="wrap row app-header-inner" style={{height:66, justifyContent:'space-between', gap:18}}>
         <button onClick={()=>go('home')} aria-label="Tenger Eleven Ger Camp" style={{background:'none', border:'none', padding:0}}><Logo size={50}/></button>
@@ -115,7 +116,7 @@ function App(){
 
   // apply accent
   useEffect(()=>{
-    const a = ACCENTS[tw.accent] || ACCENTS.sky;
+    const a = ACCENTS[tw.accent] || ACCENTS.tenger;
     const r = document.documentElement.style;
     r.setProperty('--rust', a.rust);
     r.setProperty('--rust-deep', a.deep);
@@ -129,7 +130,7 @@ function App(){
       <Header lang={lang} setLang={setLang} t={t} route={route} go={go}/>
       <main>
         {route==='home'      && <Landing lang={lang} t={t} go={go} variant={tw.landingVariant}/>}
-        {route==='book'      && <Booking lang={lang} t={t} go={go} planVariant={tw.planVariant} showToast={showToast}/>}
+        {route==='book'      && <Booking lang={lang} t={t} go={go} planVariant={tw.planVariant} showToast={showToast} initialSearch={params}/>}
         {route==='checkout'  && <Checkout lang={lang} t={t} go={go} bookingId={params.bookingId} showToast={showToast}/>}
         {route==='guide'     && <Guide lang={lang} t={t} go={go}/>}
         {route==='reception' && <Reception lang={lang} t={t} showToast={showToast}/>}
@@ -148,7 +149,7 @@ function App(){
         <TweakSection label={lang==='en'?'Accent color':'Үндсэн өнгө'}/>
         <TweakColor label={lang==='en'?'Accent':'Өнгө'} value={ACCENTS[tw.accent].rust}
           options={Object.values(ACCENTS).map(a=>a.rust)}
-          onChange={v=>{ const key=Object.keys(ACCENTS).find(k=>ACCENTS[k].rust===v)||'sky'; setTweak('accent',key); }}/>
+          onChange={v=>{ const key=Object.keys(ACCENTS).find(k=>ACCENTS[k].rust===v)||'tenger'; setTweak('accent',key); }}/>
       </TweaksPanel>
 
       {toastNode}

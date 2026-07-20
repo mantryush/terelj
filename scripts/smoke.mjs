@@ -21,7 +21,7 @@ for (const file of files) {
 }
 
 const css = readFileSync('design_handoff_terelj/prototype/styles.css', 'utf8');
-for (const token of ['--paper:      #F1E7D2', '--rust:       #2E6E8E', '--st-hold-bg: #F3E2B5', '@media (max-width: 980px)']) {
+for (const token of ['--paper:      #F7F2E7', '--rust:       #0B2A50', '--st-hold-bg: #F3E2B5', '@media (max-width: 980px)', '.quick-search']) {
   if (!css.includes(token)) throw new Error(`Missing CSS token/check: ${token}`);
 }
 
