@@ -40,6 +40,9 @@ const components = readFileSync('design_handoff_terelj/prototype/components.jsx'
 for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'ReactDOM.createPortal', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх гэр захиалгатай']) {
   if (!components.includes(check)) throw new Error(`Missing brand/calendar check: ${check}`);
 }
+for (const check of ["free:   { cls:'free'", "booked: { cls:'booked'", "function displayStatus"]) {
+  if (!components.includes(check)) throw new Error(`Missing two-state availability check: ${check}`);
+}
 
 const booking = readFileSync('design_handoff_terelj/prototype/booking.jsx', 'utf8');
 for (const check of ['<RangeDatePicker', 'ger-hover-card']) {

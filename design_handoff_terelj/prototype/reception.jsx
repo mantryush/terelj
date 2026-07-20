@@ -30,10 +30,10 @@ function ReceptionBoard({ date, statusOf, selected, onSelect, lang }){
             <div className="row" style={{gap:9, flexWrap:'wrap'}}>
               {list.map(g=>{
                 const st = statusOf(g.id);
-                const c = {free:'var(--st-free)',hold:'var(--st-hold)',web:'var(--st-web)',walkin:'var(--st-walkin)',stay:'var(--st-stay)'}[st];
+                const c = st==='free'?'var(--st-free)':'var(--st-web)';
                 const sel = selected===g.id;
                 return (
-                  <button key={g.id} onClick={()=>onSelect(g.id)} className={st==='hold'?'pulse':''}
+                  <button key={g.id} onClick={()=>onSelect(g.id)}
                     style={{width:62, height:54, borderRadius:10, cursor:'pointer',
                       border: sel?'2px solid var(--ink)':'1px solid rgba(0,0,0,0.1)',
                       background: st==='free'?'var(--st-free-bg)':c, color: st==='free'?'var(--st-free)':'#FFFDF8',
@@ -42,7 +42,7 @@ function ReceptionBoard({ date, statusOf, selected, onSelect, lang }){
                       transform: sel?'translateY(-2px)':'none'}}>
                     <span>{g.id}</span>
                     <span style={{fontSize:8.5, fontWeight:700, opacity:0.85, textTransform:'uppercase', letterSpacing:'0.04em'}}>
-                      {st==='free'?(lang==='en'?'free':'сул'):STATUS_META[st][lang==='en'?'en':'mn'].slice(0,4)}
+                      {displayStatus(st)==='free'?(lang==='en'?'free':'сул'):(lang==='en'?'booked':'захиалсан')}
                     </span>
                   </button>
                 );
@@ -223,9 +223,7 @@ function Reception({ lang, t, showToast }){
         {/* stats */}
         <div className="row" style={{gap:12, flexWrap:'wrap', marginBottom:22}}>
           <StatCard label={lang==='en'?'Available':'Сул'} value={counts.free||0} color="var(--st-free)"/>
-          <StatCard label={lang==='en'?'On hold':'Барьцаа'} value={counts.hold||0} color="var(--gold-deep)" sub={lang==='en'?'web, expiring':'веб, дуусах гэж буй'}/>
-          <StatCard label={lang==='en'?'Booked':'Захиалсан'} value={(counts.web||0)+(counts.walkin||0)} color="var(--rust)"/>
-          <StatCard label={lang==='en'?'Staying':'Амарч буй'} value={counts.stay||0} color="var(--plum)"/>
+          <StatCard label={lang==='en'?'Booked':'Захиалагдсан'} value={GERS.length-(counts.free||0)} color="var(--rust)"/>
           <StatCard label={lang==='en'?'Revenue':'Орлого'} value={money(revenue)} color="var(--ink)"/>
         </div>
 

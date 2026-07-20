@@ -48,7 +48,7 @@
 
   /* --- Type --- */
   --serif: 'Cormorant Garamond', 'Times New Roman', serif;
-  --sans:  'Manrope', -apple-system, 'Segoe UI', sans-serif;
+  --sans:  'Cormorant Garamond', 'Times New Roman', serif;
 
   /* --- Radii --- */
   --r-sm: 8px;
@@ -200,6 +200,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   display: inline-block; flex: none;
 }
 .dot-free   { background: var(--st-free); }
+.dot-booked { background: var(--st-web); }
 .dot-hold   { background: var(--st-hold); }
 .dot-web    { background: var(--st-web); }
 .dot-walkin { background: var(--st-walkin); }
@@ -482,6 +483,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   color: var(--ink);
   box-shadow: var(--sh-sm);
 }
+.range-selection-hint { display:flex; align-items:center; justify-content:center; gap:7px; margin:-15px 0 16px; color:var(--ink-2); font-size:12px; font-weight:750; }
+.range-selection-hint span { display:grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--sky-soft); color:var(--rust); font-size:10px; }
 .range-months { display: grid; grid-template-columns: 1fr 1fr; gap: 38px; }
 .range-month { min-width: 0; }
 .range-month-title {
@@ -589,7 +592,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .range-nav {
   position: absolute;
-  top: 86px;
+  top: 108px;
   z-index: 2;
   display: grid;
   place-items: center;
@@ -834,7 +837,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .range-month-1 { display: none; }
   .range-day { font-size: 14px; }
   .range-mode-tabs { margin-bottom: 22px; }
-  .range-nav { top: 80px; }
+  .range-nav { top: 102px; }
   .range-flex-chips { margin-right: -6px; margin-left: -6px; }
   .range-flexible-panel { padding-top: 8px; }
   .range-flex-months { grid-auto-columns: 116px; }

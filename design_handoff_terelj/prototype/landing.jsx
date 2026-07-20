@@ -255,7 +255,7 @@ function Landing({ lang, t, go, variant='split', showToast }){
             <p style={{fontSize:16.5, color:'rgba(241,231,210,0.8)', lineHeight:1.6}}>
               {lang==='en'?'Set your dates, see exactly which gers are free, held or taken — in real time. Reserve, and we hold it for 30 minutes while you check out.':'Огноогоо сонгоод аль гэр сул, аль нь барьцаалагдсан, аль нь захиалагдсаныг бодит цагт хар. Сонгоход 30 минут хадгална.'}</p>
             <div className="row gap-4" style={{flexWrap:'wrap', marginTop:4}}>
-              {[['free',STATUS_META.free],['hold',STATUS_META.hold],['web',STATUS_META.web],['stay',STATUS_META.stay]].map(([k,m])=>(
+              {[['free',STATUS_META.free],['booked',STATUS_META.booked]].map(([k,m])=>(
                 <span key={k} className="row gap-2" style={{fontSize:13, fontWeight:600, color:'var(--paper)'}}>
                   <span className={`dot dot-${m.cls}`}></span>{lang==='en'?m.en:m.mn}
                 </span>
@@ -327,7 +327,7 @@ function MiniMapPreview({ lang }){
       </svg>
       {GERS.map(g=>{
         const st = tj.statusForRange(g.id, today, addDays(today,1));
-        const c = {free:'#5C6E45',hold:'#C99536',web:'#B8472A',walkin:'#2E6E8E',stay:'#6E4A63'}[st];
+        const c = st==='free'?'#5C6E45':'#B8472A';
         return <span key={g.id} style={{position:'absolute', left:`${g.x}%`, top:`${g.y}%`, width:9, height:9, marginLeft:-4, marginTop:-4, borderRadius:'50%', background:c, boxShadow:`0 0 8px ${c}`}}></span>;
       })}
     </div>

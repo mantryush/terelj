@@ -4,14 +4,14 @@
 var useState = React.useState;
 var useEffect = React.useEffect;
 function GerMarker({ g, status, selected, onClick, onHover, onLeave, lang }){
-  const c = {free:'var(--st-free)',hold:'var(--st-hold)',web:'var(--st-web)',walkin:'var(--st-walkin)',stay:'var(--st-stay)'}[status];
+  const c = status==='free'?'var(--st-free)':'var(--st-web)';
   const isFree = status==='free';
   return (
     <button className="ger-marker" onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave} onFocus={onHover} onBlur={onLeave} title={gerName(g.id,lang)}
       style={{position:'absolute', left:`${g.x}%`, top:`${g.y}%`, transform:'translate(-50%,-50%)',
         border:'none', background:'transparent', cursor:'pointer', zIndex: selected?6:3, padding:0}}>
       <div className="row" style={{position:'relative', justifyContent:'center', flexDirection:'column', alignItems:'center', gap:3}}>
-        <div className={`ger-marker-dot ${status==='hold'?'pulse':''}`} style={{
+        <div className="ger-marker-dot" style={{
           width: selected?40:32, height: selected?40:32, borderRadius:'50%',
           background: c, display:'flex', alignItems:'center', justifyContent:'center',
           boxShadow: selected? `0 0 0 4px var(--paper), 0 0 0 6px ${c}, 0 6px 16px rgba(0,0,0,0.3)` : '0 3px 8px rgba(0,0,0,0.28)',
@@ -96,7 +96,7 @@ function PlanGrid({ statusOf, selected, onSelect, lang }){
             <div className="row" style={{gap:10, flexWrap:'wrap'}}>
               {list.map(g=>{
                 const st = statusOf(g.id);
-                const c = {free:'var(--st-free)',hold:'var(--st-hold)',web:'var(--st-web)',walkin:'var(--st-walkin)',stay:'var(--st-stay)'}[st];
+                const c = st==='free'?'var(--st-free)':'var(--st-web)';
                 const sel = selected===g.id;
                 return (
                   <button key={g.id} onClick={()=>onSelect(g.id)} title={gerName(g.id,lang)}
@@ -121,13 +121,14 @@ function PlanGrid({ statusOf, selected, onSelect, lang }){
 
 /* ---------- legend ---------- */
 function Legend({ lang, counts }){
-  const items = [['free',STATUS_META.free],['hold',STATUS_META.hold],['web',STATUS_META.web],['walkin',STATUS_META.walkin],['stay',STATUS_META.stay]];
+  const bookedCount = counts ? Object.keys(counts).filter(k=>k!=='free').reduce((n,k)=>n+(counts[k]||0),0) : null;
+  const items = [['free',STATUS_META.free],['booked',STATUS_META.booked]];
   return (
     <div className="row" style={{gap:16, flexWrap:'wrap'}}>
       {items.map(([k,m])=>(
         <span key={k} className="row gap-2" style={{fontSize:13, fontWeight:600, color:'var(--ink-2)'}}>
           <span className={`dot dot-${m.cls}`}></span>{lang==='en'?m.en:m.mn}
-          {counts && <span className="faint mono">({counts[k]||0})</span>}
+          {counts && <span className="faint mono">({k==='free'?(counts.free||0):bookedCount})</span>}
         </span>
       ))}
     </div>
@@ -140,7 +141,6 @@ function GerDetail({ gerId, status, checkIn, checkOut, guests, lang, onHold, onC
   const m = GER_TYPES[g.type];
   const nights = Math.max(1, nightsBetween(checkIn, checkOut));
   const amen = AMEN[g.type] || [];
-  const booking = (status!=='free') ? TJ.bookingFor(gerId, checkIn, checkOut) : null;
   const tooSmall = guests > m.cap;
   const blocked = status!=='free';
   const media = gerMedia(gerId);
@@ -185,14 +185,9 @@ function GerDetail({ gerId, status, checkIn, checkOut, guests, lang, onHold, onC
         {blocked ? (
           <div className="col" style={{gap:8, background:'var(--card-2)', borderRadius:'var(--r)', padding:'14px 16px'}}>
             <span className="row gap-2" style={{fontWeight:800, fontSize:14}}>
-              {status==='hold'? <Icons.clock size={18}/> : <Icons.x size={18}/>}
-              {status==='hold'
-                ? (lang==='en'?'Held by another guest':'Өөр зочин түр барьсан')
-                : (lang==='en'?'Not available for these dates':'Энэ өдрүүдэд сул биш')}
+              <Icons.x size={18}/>
+              {lang==='en'?'Booked for these dates':'Энэ өдрүүдэд захиалагдсан'}
             </span>
-            {status==='hold' && booking?.holdUntil && (
-              <div className="row gap-2" style={{fontSize:13}}><span className="muted">{lang==='en'?'Frees in':'Сулрах хүртэл'}:</span><HoldTimer until={booking.holdUntil} lang={lang}/></div>
-            )}
             <span className="faint" style={{fontSize:13}}>{lang==='en'?'Pick other dates or another ger.':'Өөр огноо эсвэл өөр гэр сонгоно уу.'}</span>
           </div>
         ) : (

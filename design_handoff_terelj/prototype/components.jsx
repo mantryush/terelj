@@ -88,20 +88,19 @@ function LangToggle({ lang, setLang }){
 
 /* ---------- status helpers ---------- */
 const STATUS_META = {
-  free:   { cls:'free',   mn:'Сул',          en:'Available' },
-  hold:   { cls:'hold',   mn:'Түр барьсан',   en:'On hold' },
-  web:    { cls:'web',    mn:'Захиалагдсан',  en:'Booked (web)' },
-  walkin: { cls:'walkin', mn:'Reception',    en:'Walk-in' },
-  stay:   { cls:'stay',   mn:'Амарч буй',     en:'Checked-in' },
+  free:   { cls:'free',   mn:'Сул', en:'Available' },
+  booked: { cls:'booked', mn:'Захиалагдсан', en:'Booked' },
 };
+function displayStatus(status){ return status==='free'?'free':'booked'; }
 function StatusBadge({ status, lang }){
-  const m = STATUS_META[status] || STATUS_META.free;
-  const bg = {free:'var(--st-free-bg)',hold:'var(--st-hold-bg)',web:'var(--st-web-bg)',walkin:'var(--st-walkin-bg)',stay:'var(--st-stay-bg)'}[status];
-  const fg = {free:'var(--st-free)',hold:'var(--gold-deep)',web:'var(--rust-deep)',walkin:'var(--st-walkin)',stay:'var(--st-stay)'}[status];
+  const visible = displayStatus(status);
+  const m = STATUS_META[visible];
+  const bg = visible==='free'?'var(--st-free-bg)':'var(--st-web-bg)';
+  const fg = visible==='free'?'var(--st-free)':'var(--rust-deep)';
   return (
     <span className="row" style={{gap:6, background:bg, color:fg, fontWeight:700, fontSize:12,
       padding:'4px 11px', borderRadius:'var(--r-pill)'}}>
-      <span className={`dot dot-${m.cls} ${status==='hold'?'pulse':''}`}></span>
+      <span className={`dot dot-${m.cls}`}></span>
       {lang==='en'?m.en:m.mn}
     </span>
   );
@@ -234,7 +233,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
     const picked=ymd(date);
     if(phase==='checkin'){
       onCheckIn(picked);
-      if(!checkOut || picked>=checkOut) onCheckOut(addDays(picked,1));
+      onCheckOut(addDays(picked,1));
       setPhase('checkout');
       setRangeError('');
       setHovered(null);
@@ -252,6 +251,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
       onCheckOut(picked);
       setHovered(null);
       setRangeError('');
+      setPhase('checkin');
     }
   };
   const finishSelection = ()=>{
@@ -264,7 +264,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
   const weekday = lang==='en' ? ['Mo','Tu','We','Th','Fr','Sa','Su'] : ['Да','Мя','Лх','Пү','Ба','Бя','Ня'];
   const canPrev = ymd(new Date(cursor.getFullYear(),cursor.getMonth()+1,0)) >= min;
   const moveMonth = (n)=>setCursor(new Date(cursor.getFullYear(),cursor.getMonth()+n,1));
-  const previewEnd = phase==='checkout' && hovered && hovered>checkIn ? hovered : checkOut;
+  const previewEnd = phase==='checkout' ? (hovered&&hovered>checkIn?hovered:checkIn) : checkOut;
 
   const flexibleMonths = Array.from({length:8},(_,i)=>new Date(new Date().getFullYear(),new Date().getMonth()+i,1));
   const applyFlexibleRange = (start,end)=>{
@@ -314,7 +314,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
             if(!d) return <span key={`e${i}`} className="range-day-empty"/>;
             const ds=ymd(d), free=freeForRange(ds,addDays(ds,1)), soldOut=free===0, partial=free>0&&free<GERS.length;
             const disabled=ds<min||soldOut;
-            const start=ds===checkIn, end=ds===checkOut;
+            const start=ds===checkIn, end=phase!=='checkout'&&ds===checkOut;
             const inRange=ds>checkIn && ds<previewEnd;
             return (
               <button key={ds} type="button" disabled={disabled}
@@ -349,6 +349,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
           </div>
           {mode==='dates' ? (
             <>
+              <div className="range-selection-hint"><span>{phase==='checkin'?'1':'✓'}</span>{phase==='checkin'?(lang==='en'?'Choose a new start date':'Шинэ эхлэх өдрөө сонгоно уу'):(lang==='en'?'Now choose the end date':'Одоо дуусах өдрөө сонгоно уу')}</div>
               <button type="button" className="range-nav range-nav-prev" onClick={()=>moveMonth(-1)} disabled={!canPrev} aria-label="Previous month">‹</button>
               <button type="button" className="range-nav range-nav-next" onClick={()=>moveMonth(1)} aria-label="Next month">›</button>
               <div className="range-months"><Month offset={0}/><Month offset={1}/></div>
@@ -401,6 +402,6 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
 }
 
 Object.assign(window, {
-  Logo, Icon, Icons, KheeDivider, LangToggle, StatusBadge, STATUS_META,
+  Logo, Icon, Icons, KheeDivider, LangToggle, StatusBadge, STATUS_META, displayStatus,
   useCountdown, HoldTimer, Modal, useToast, Stepper, DateField, RangeDatePicker,
 });
