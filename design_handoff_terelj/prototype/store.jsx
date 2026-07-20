@@ -23,43 +23,22 @@ const MO_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'
 function money(n){ return '₮' + n.toLocaleString('en-US'); }
 
 /* ============================================================
-   GER / BUILDING CATALOG  (20 units on the resort map)
+   TENGER ELEVEN GER CAMP — 8 compact gers
    x,y = percent position on the grounds map
    ============================================================ */
 const GER_TYPES = {
-  energiin: { mn:'Энгийн гэр',     en:'Classic Ger',  cap:4, price:120000, color:'#C99536' },
-  family:   { mn:'Гэр бүлийн гэр', en:'Family Ger',   cap:6, price:180000, color:'#B8472A' },
-  vip:      { mn:'VIP гэр',        en:'VIP Ger',      cap:4, price:260000, color:'#6E4A63' },
-  luxe:     { mn:'Luxe гэр',       en:'Luxe Ger',     cap:2, price:340000, color:'#2E6E8E' },
-  cabin:    { mn:'Модон байшин',   en:'Wood Cabin',   cap:8, price:480000, color:'#5C6E45' },
+  standard: { mn:'Стандарт гэр', en:'Standard Ger', cap:4, price:120000, color:'#F29A1F' },
 };
 
 const GERS = [
-  // ---- riverside luxe row ----
-  { id:'L1', type:'luxe',     name:'Сэлэнгэ', x:18, y:20 },
-  { id:'L2', type:'luxe',     name:'Хөвсгөл', x:30, y:16 },
-  { id:'L3', type:'luxe',     name:'Орхон',   x:43, y:18 },
-  // ---- cabins on the hill ----
-  { id:'C1', type:'cabin',    name:'Хан гэр', x:64, y:14 },
-  { id:'C2', type:'cabin',    name:'Тэрэлж',  x:78, y:19 },
-  // ---- VIP cluster ----
-  { id:'V1', type:'vip',      name:'Бүргэд',  x:14, y:42 },
-  { id:'V2', type:'vip',      name:'Шонхор',  x:26, y:46 },
-  { id:'V3', type:'vip',      name:'Тас',     x:38, y:43 },
-  { id:'V4', type:'vip',      name:'Харцага', x:50, y:47 },
-  // ---- family gers ----
-  { id:'F1', type:'family',   name:'Алтай',   x:66, y:40 },
-  { id:'F2', type:'family',   name:'Хангай',  x:78, y:45 },
-  { id:'F3', type:'family',   name:'Говь',    x:88, y:38 },
-  // ---- classic gers (camp circle) ----
-  { id:'E1', type:'energiin', name:'Цагаан',  x:20, y:70 },
-  { id:'E2', type:'energiin', name:'Шарга',   x:31, y:74 },
-  { id:'E3', type:'energiin', name:'Хээр',    x:42, y:71 },
-  { id:'E4', type:'energiin', name:'Зээрд',   x:53, y:75 },
-  { id:'E5', type:'energiin', name:'Хонгор',  x:64, y:72 },
-  { id:'E6', type:'energiin', name:'Бор',     x:74, y:76 },
-  { id:'E7', type:'energiin', name:'Халтар',  x:84, y:70 },
-  { id:'E8', type:'energiin', name:'Сартай',  x:90, y:60 },
+  { id:'E1', type:'standard', name:'Гэр 1', x:25, y:39 },
+  { id:'E2', type:'standard', name:'Гэр 2', x:39, y:35 },
+  { id:'E3', type:'standard', name:'Гэр 3', x:53, y:38 },
+  { id:'E4', type:'standard', name:'Гэр 4', x:67, y:35 },
+  { id:'E5', type:'standard', name:'Гэр 5', x:32, y:58 },
+  { id:'E6', type:'standard', name:'Гэр 6', x:46, y:55 },
+  { id:'E7', type:'standard', name:'Гэр 7', x:60, y:58 },
+  { id:'E8', type:'standard', name:'Гэр 8', x:74, y:54 },
 ];
 
 function gerById(id){ return GERS.find(g=>g.id===id); }
@@ -72,11 +51,7 @@ function gerName(id, lang){
 
 /* amenities per type */
 const AMEN = {
-  energiin: [['stove','Зуух / Stove'],['bed','4 ор / 4 beds'],['wifi','Wi-Fi'],['fire','Гадаа гал / Fire pit']],
-  family:   [['stove','Зуух'],['bed','6 ор'],['wifi','Wi-Fi'],['fire','Гадаа гал'],['table','Хоолны майхан']],
-  vip:      [['bath','Угаалгын өрөө'],['bed','Зочны өрөө'],['wifi','Wi-Fi'],['heat','Дулаан шал'],['view','Голын манзай']],
-  luxe:     [['bath','Жакузи / Jacuzzi'],['bed','King ор'],['wifi','Хурдан Wi-Fi'],['heat','Дулаан шал'],['view','Панорам цонх'],['bar','Mini bar']],
-  cabin:    [['bath','2 угаалгын өрөө'],['bed','8 ор / 4 өрөө'],['kitchen','Тоног бүхий гал тогоо'],['wifi','Wi-Fi'],['fire','Цахилгаан зуух'],['deck','Модон тагт']],
+  standard: [['stove','Зуух / Stove'],['bed','4 ор / 4 beds'],['wifi','Wi-Fi'],['fire','Гадаа гал / Fire pit']],
 };
 
 /* extra services */
@@ -92,7 +67,7 @@ const SERVICES = [
 /* ============================================================
    BOOKING STORE — localStorage + BroadcastChannel live sync
    ============================================================ */
-const LS_KEY = 'terelj.bookings.v1';
+const LS_KEY = 'tenger-eleven.bookings.v2';
 const HOLD_MIN = 30;
 window.HOLD_MIN = HOLD_MIN;
 
@@ -225,13 +200,10 @@ function seed(force){
   if(!force && localStorage.getItem(LS_KEY)) return;
   const t = todayStr();
   const demo = [
-    { gerId:'L1', off:0,  n:2, status:'stay',   name:'Б. Ариунаа',  phone:'9911-2233', count:2, ch:'web' },
-    { gerId:'E2', off:0,  n:1, status:'stay',   name:'Г. Тэмүүлэн', phone:'8800-5521', count:4, ch:'reception' },
-    { gerId:'V1', off:0,  n:3, status:'web',    name:'D. Saruul',   phone:'9090-1010', count:3, ch:'web' },
-    { gerId:'F1', off:1,  n:2, status:'web',    name:'Б. Энхжин',   phone:'9511-7788', count:5, ch:'web' },
-    { gerId:'C1', off:2,  n:2, status:'web',    name:'M. Bold',     phone:'9919-0303', count:7, ch:'web' },
-    { gerId:'E5', off:0,  n:1, status:'walkin', name:'Зочин',       phone:'—',         count:3, ch:'reception' },
-    { gerId:'V3', off:0,  n:1, status:'hold',   name:'Веб зочин',   phone:'…',         count:2, ch:'web' },
+    { gerId:'E1', off:0, n:2, status:'stay', name:'Б. Ариунаа', phone:'9911-2233', count:2, ch:'web' },
+    { gerId:'E3', off:0, n:3, status:'web',  name:'D. Saruul',  phone:'9090-1010', count:3, ch:'web' },
+    { gerId:'E4', off:1, n:2, status:'web',  name:'Б. Энхжин',  phone:'9511-7788', count:4, ch:'web' },
+    { gerId:'E6', off:0, n:1, status:'hold', name:'Веб зочин',  phone:'…',         count:2, ch:'web' },
   ];
   const list = demo.map((d,i)=>({
     id:'SEED'+i,

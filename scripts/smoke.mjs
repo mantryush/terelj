@@ -29,6 +29,8 @@ const store = readFileSync('design_handoff_terelj/prototype/store.jsx', 'utf8');
 for (const check of ['const GERS = [', 'const SERVICES = [', 'statusForRange', 'walkIn']) {
   if (!store.includes(check)) throw new Error(`Missing store check: ${check}`);
 }
+const gerCount = (store.match(/\{ id:'E\d', type:'standard'/g) || []).length;
+if (gerCount !== 8) throw new Error(`Expected exactly 8 standard gers, found ${gerCount}`);
 
 const components = readFileSync('design_handoff_terelj/prototype/components.jsx', 'utf8');
 for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'ReactDOM.createPortal', 'range-popover', 'ХОНОГЛОХ ӨДРҮҮД', 'flexibleRanges', 'Даваа–Ням', 'Бүх гэр захиалгатай']) {

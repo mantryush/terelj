@@ -19,7 +19,7 @@ function SteppeScene({ style }){
       <path d="M0 340 L260 290 L520 345 L820 295 L1200 350 V420 H0 Z" fill="#7E8A55"/>
       <path d="M0 380 L380 345 L760 385 L1200 350 V420 H0 Z" fill="#94994F" opacity="0.9"/>
       {/* gers on the meadow */}
-      {[[180,360],[250,372],[330,366]].map(([x,y],i)=>(
+      {[[170,354],[225,365],[280,354],[335,365],[390,354],[445,365],[500,354],[555,365]].map(([x,y],i)=>(
         <g key={i} transform={`translate(${x},${y})`}>
           <path d={`M-16 0 L0 -16 L16 0 Z`} fill="#E7D9BD"/>
           <rect x="-13" y="0" width="26" height="15" rx="2" fill="#FBF6EA"/>
@@ -222,8 +222,8 @@ function Landing({ lang, t, go, variant='split', showToast }){
         <div className="row" style={{justifyContent:'center', gap:28, marginBottom:30}}><KheeDivider w={180}/></div>
         <div className="stat-grid" style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:18}}>
           {[
-            ['20', lang==='en'?'gers & cabins':'гэр & байшин'],
-            ['1.5 цаг', lang==='en'?'from the city':'хотоос'],
+            ['8', lang==='en'?'nearby gers':'ойрхон байрлах гэр'],
+            ['Мэлхий хад', lang==='en'?'Turtle Rock area':'ойролцоо'],
             ['24/7', lang==='en'?'reception':'ресепшн'],
             ['<5 мин', lang==='en'?'online booking':'онлайн захиалга'],
           ].map(([n,l],i)=>(
@@ -240,9 +240,9 @@ function Landing({ lang, t, go, variant='split', showToast }){
         <div className="col center" style={{gap:10, marginBottom:30}}>
           <span className="eyebrow">{lang==='en'?'STAY':'БАЙРШИХ'}</span>
           <h2 className="serif" style={{fontSize:42, fontWeight:700}}>{lang==='en'?'Choose your ger':'Гэрээ сонго'}</h2>
-          <p className="muted" style={{fontSize:16, maxWidth:560}}>{lang==='en'?'Five kinds of stay — from a classic felt ger to a riverside Luxe with a jacuzzi.':'Энгийн эсгий гэрээс эхлээд жакузитай голын эргийн Luxe хүртэл таван төрлийн байр.'}</p>
+          <p className="muted" style={{fontSize:16, maxWidth:560}}>{lang==='en'?'Eight comfortable gers arranged close together below the rocky Terelj hills.':'Тэрэлжийн хадат уулсын бэлд ойрхон байрласан тав тухтай 8 гэрээсээ сонгоорой.'}</p>
         </div>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))', gap:20}}>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,340px))', justifyContent:'center', gap:20}}>
           {Object.keys(GER_TYPES).map(type=>(
             <TypeCard key={type} type={type} lang={lang} onBook={search}/>
           ))}
@@ -325,8 +325,8 @@ function MiniMapPreview({ lang }){
   return (
     <div style={{position:'relative', width:'100%', height:'100%', background:'radial-gradient(circle at 30% 30%, #25406b22, transparent 60%), #161009'}}>
       <svg viewBox="0 0 100 75" style={{position:'absolute', inset:0, width:'100%', height:'100%'}}>
-        <path d="M0 26 Q30 20 55 30 T100 28" stroke="#2E6E8E" strokeWidth="3" fill="none" opacity="0.5"/>
-        <path d="M0 55 Q40 60 70 52 T100 58" stroke="#3a2e20" strokeWidth="0.6" fill="none"/>
+        <path d="M0 27 L13 17 L24 25 L38 13 L52 27 L66 18 L80 26 L100 14 V34 H0Z" fill="#334D47" opacity=".7"/>
+        <path d="M10 58 H90 M15 63 H85" stroke="#C9B58E" strokeWidth="0.8" fill="none" opacity=".7"/>
       </svg>
       {GERS.map(g=>{
         const st = tj.statusForRange(g.id, today, addDays(today,1));

@@ -855,6 +855,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .ger-hover-card { display: none; }
   .ger-marker { min-width: 46px; min-height: 46px; margin-left: -7px; margin-top: -7px; }
   .ger-marker-dot { width: 42px !important; height: 42px !important; }
+  .plan-map { aspect-ratio: 4 / 3 !important; }
   .inline-detail-backdrop {
     position: fixed;
     inset: 0;

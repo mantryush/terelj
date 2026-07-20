@@ -31,17 +31,14 @@ function GerMarker({ g, status, selected, onClick, onHover, onLeave, lang }){
 function GroundsBg(){
   return (
     <svg viewBox="0 0 100 75" preserveAspectRatio="none" style={{position:'absolute', inset:0, width:'100%', height:'100%'}}>
-      {/* meadow base handled by container; draw river, paths, zones */}
+      {/* compact meadow below Turtle Rock — eight nearby gers */}
       <defs>
-        <linearGradient id="riv" x1="0" x2="1"><stop offset="0" stopColor="#3E86A6"/><stop offset="1" stopColor="#2E6E8E"/></linearGradient>
+        <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#405B4D"/><stop offset="1" stopColor="#68815A"/></linearGradient>
       </defs>
-      {/* river along the top */}
-      <path d="M-2 30 Q20 22 40 28 Q62 35 80 26 Q92 21 102 27 L102 33 Q90 28 80 32 Q60 41 40 34 Q20 28 -2 36 Z" fill="url(#riv)" opacity="0.85"/>
-      <path d="M-2 30 Q20 22 40 28 Q62 35 80 26 Q92 21 102 27" stroke="#9FD0E0" strokeWidth="0.4" fill="none" opacity="0.6"/>
-      {/* path loop */}
-      <path d="M50 9 V58 M10 50 H92 M30 36 H72" stroke="#C9B58E" strokeWidth="1.1" fill="none" strokeDasharray="2 1.6" opacity="0.8"/>
-      {/* forest patches */}
-      {[[6,12],[90,12],[6,64],[94,52],[58,62]].map(([x,y],i)=>(
+      <path d="M0 22 L10 11 L18 19 L29 8 L40 20 L53 13 L64 22 L77 10 L87 19 L100 9 V31 H0Z" fill="url(#hill)" opacity=".9"/>
+      <path d="M9 67 H91 M9 71 H91 M14 63 V74 M27 63 V74 M40 63 V74 M53 63 V74 M66 63 V74 M79 63 V74" stroke="#263C38" strokeWidth=".55" opacity=".55"/>
+      <path d="M18 48 Q50 40 82 48 M22 60 Q50 52 78 60" stroke="#E8D7B7" strokeWidth="1.15" fill="none" strokeDasharray="2 1.5" opacity=".85"/>
+      {[[8,33],[91,31],[12,57],[88,56]].map(([x,y],i)=>(
         <g key={i} opacity="0.5">
           {[0,1,2].map(j=><circle key={j} cx={x+j*2.2-2} cy={y+(j%2)} r="2.4" fill="#5C6E45"/>)}
         </g>
@@ -55,13 +52,13 @@ function PlanMap({ statusOf, selected, onSelect, lang }){
   const [hovered, setHovered] = useState(null);
   const hg = hovered ? gerById(hovered) : null;
   return (
-    <div style={{position:'relative', width:'100%', aspectRatio:'4/3', borderRadius:'var(--r-lg)', overflow:'hidden',
+    <div className="plan-map" style={{position:'relative', width:'100%', aspectRatio:'16/9', borderRadius:'var(--r-lg)', overflow:'hidden',
       border:'1px solid var(--line)', boxShadow:'var(--sh)',
       background:'linear-gradient(160deg, #B9C48E 0%, #A7B57A 45%, #C7BD8E 100%)'}}>
       <GroundsBg/>
       {/* zone labels */}
-      <span style={zoneLbl(50,4)}>{lang==='en'?'★ Tuul river':'★ Туул гол'}</span>
-      <span style={zoneLbl(50,90)}>{lang==='en'?'Camp circle':'Гэрийн тойрог'}</span>
+      <span style={zoneLbl(50,4)}>{lang==='en'?'★ Turtle Rock view':'★ Мэлхий хадны харагдац'}</span>
+      <span style={zoneLbl(50,90)}>{lang==='en'?'Terrace & dining':'Террас & хоолны хэсэг'}</span>
       {GERS.map(g=>(
         <GerMarker key={g.id} g={g} status={statusOf(g.id)} selected={selected===g.id}
           onClick={()=>onSelect(g.id)} onHover={()=>setHovered(g.id)} onLeave={()=>setHovered(null)} lang={lang}/>
