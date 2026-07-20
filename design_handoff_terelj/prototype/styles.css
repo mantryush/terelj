@@ -350,6 +350,9 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   border-radius: var(--r-pill);
   transition: box-shadow .16s ease, border-color .16s ease;
 }
+.range-trigger-single { grid-template-columns: 1fr; }
+.range-trigger-single .range-trigger-half { width: 100%; }
+.range-trigger-single .range-trigger-half > strong { display: flex; align-items: center; gap: 7px; }
 .range-trigger.is-open {
   border-color: transparent;
   box-shadow: 0 0 0 2px var(--ink), var(--sh);
@@ -484,6 +487,44 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   color: #fff;
 }
 .range-day:disabled { color: var(--ink-faint); cursor: default; text-decoration: line-through; opacity: .55; }
+.range-day.is-partial:not(.is-start):not(.is-end)::after {
+  content: '';
+  position: absolute;
+  right: 50%;
+  bottom: 4px;
+  z-index: 2;
+  width: 4px;
+  height: 4px;
+  margin-right: -2px;
+  border-radius: 50%;
+  background: var(--gold-deep);
+}
+.range-day.is-sold-out { color: var(--ink-faint); opacity: .42; }
+.range-availability-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 14px;
+  color: var(--ink-3);
+  font-size: 11px;
+  font-weight: 650;
+}
+.availability-dot { width: 7px; height: 7px; margin-left: 8px; border-radius: 50%; }
+.availability-dot.partial { background: var(--gold-deep); }
+.availability-dot.sold { background: var(--ink-faint); box-shadow: inset 0 0 0 1px var(--ink-3); }
+.range-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--st-web-bg);
+  color: var(--rust-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
 .range-nav {
   position: absolute;
   top: 86px;
@@ -578,8 +619,58 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   scroll-snap-align: start;
 }
 .range-flex-months button:hover { border-color: var(--ink); box-shadow: var(--sh-sm); }
+.range-flex-months button.is-active {
+  border-color: var(--ink);
+  background: var(--sky-soft);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
 .range-flex-months strong { margin-top: 9px; color: var(--ink); font-size: 14px; }
 .range-flex-months span { font-size: 12px; }
+.range-flex-options {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card-2);
+}
+.range-flex-options > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.range-flex-options > div:first-child strong { font-size: 14px; }
+.range-flex-options > div:first-child span { color: var(--ink-3); font-size: 12px; }
+.range-flex-option-list {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 8px;
+}
+.range-flex-option-list button {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+}
+.range-flex-option-list button:hover { border-color: var(--ink); box-shadow: var(--sh-sm); }
+.range-flex-option-list button:disabled {
+  border-style: dashed;
+  background: var(--paper-2);
+  color: var(--ink-faint);
+  cursor: not-allowed;
+  opacity: .66;
+}
+.range-flex-option-list button:disabled b { color: var(--rust); }
+.range-flex-option-list span { overflow: hidden; font-size: 12.5px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.range-flex-option-list b { color: var(--pine); font-size: 10.5px; white-space: nowrap; }
 
 /* Fade-in */
 @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
@@ -680,6 +771,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .range-flex-chips { margin-right: -6px; margin-left: -6px; }
   .range-flexible-panel { padding-top: 8px; }
   .range-flex-months { grid-auto-columns: 116px; }
+  .range-flex-option-list { grid-template-columns: 1fr; }
+  .range-flex-options > div:first-child { align-items: flex-start; flex-direction: column; }
   .landing-hero { min-height: 720px !important; }
   .landing-hero-content { padding-top: 54px !important; padding-bottom: 74px !important; }
   .quick-search {

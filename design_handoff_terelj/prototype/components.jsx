@@ -189,6 +189,7 @@ function DateField({ value, onChange, min, label }){
 
 /* ---------- Airbnb-inspired range date picker ---------- */
 function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='mn' }){
+  const bookings = useBookings().all();
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState('dates');
@@ -196,8 +197,12 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
   const [hovered, setHovered] = useState(null);
   const [flexDays, setFlexDays] = useState(0);
   const [stayLength, setStayLength] = useState('weekend');
+  const [flexMonth, setFlexMonth] = useState(null);
+  const [rangeError, setRangeError] = useState('');
   const startMonth = ()=>{ const d=parseYMD(checkIn||min); return new Date(d.getFullYear(),d.getMonth(),1); };
   const [cursor, setCursor] = useState(startMonth);
+  const activeStatuses = ['hold','web','walkin','stay'];
+  const freeForRange = (start,end)=>GERS.filter(g=>!bookings.some(b=>activeStatuses.includes(b.status) && b.gerId===g.id && overlaps(start,end,b.checkIn,b.checkOut))).length;
 
   useEffect(()=>{
     const close = (e)=>{ if(rootRef.current && !rootRef.current.contains(e.target)) setOpen(false); };
@@ -208,6 +213,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
   }, []);
 
   const openAt = (nextPhase)=>{
+    setRangeError('');
     setPhase(nextPhase);
     const base = parseYMD(nextPhase==='checkout' ? checkOut : checkIn);
     setCursor(new Date(base.getFullYear(),base.getMonth(),1));
@@ -219,6 +225,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
       onCheckIn(picked);
       if(!checkOut || picked>=checkOut) onCheckOut(addDays(picked,1));
       setPhase('checkout');
+      setRangeError('');
       setHovered(null);
       return;
     }
@@ -227,6 +234,10 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
       onCheckOut(addDays(picked,1));
       setPhase('checkout');
     } else {
+      if(freeForRange(checkIn,picked)===0){
+        setRangeError(lang==='en'?'No single stay is available for this whole range. Choose a shorter stay or different dates.':'Энэ бүх хугацаанд бүтнээрээ сул байр алга. Богино хугацаа эсвэл өөр өдрүүд сонгоно уу.');
+        return;
+      }
       onCheckOut(picked);
       setOpen(false);
       setHovered(null);
@@ -241,18 +252,36 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
   const previewEnd = phase==='checkout' && hovered && hovered>checkIn ? hovered : checkOut;
 
   const flexibleMonths = Array.from({length:8},(_,i)=>new Date(new Date().getFullYear(),new Date().getMonth()+i,1));
-  const applyFlexibleMonth = (month)=>{
-    const monthStart=ymd(month);
-    let start=monthStart<min ? min : monthStart;
-    if(stayLength==='weekend'){
-      let d=parseYMD(start);
-      while(d.getDay()!==5) d.setDate(d.getDate()+1);
-      start=ymd(d);
-    }
-    const nights={weekend:2,week:7,month:30}[stayLength];
+  const applyFlexibleRange = (start,end)=>{
     onCheckIn(start);
-    onCheckOut(addDays(start,nights));
+    onCheckOut(end);
     setOpen(false);
+  };
+  const flexibleRanges = (month)=>{
+    if(!month) return [];
+    const y=month.getFullYear(), mo=month.getMonth();
+    const last=new Date(y,mo+1,0);
+    if(stayLength==='month'){
+      const start=ymd(new Date(y,mo,1))<min ? min : ymd(new Date(y,mo,1));
+      const end=ymd(new Date(y,mo+1,1));
+      return start<end ? [{start,end,available:freeForRange(start,end)>0}] : [];
+    }
+    const wanted=stayLength==='weekend'?5:1;
+    const nights=stayLength==='weekend'?2:7;
+    const list=[];
+    for(let d=new Date(y,mo,1); d<=last; d.setDate(d.getDate()+1)){
+      const start=ymd(d);
+      if(d.getDay()===wanted && start>=min){
+        const end=addDays(start,nights);
+        list.push({start,end,available:freeForRange(start,end)>0});
+      }
+    }
+    return list;
+  };
+  const shortRange = (r)=>{
+    const a=parseYMD(r.start), b=parseYMD((stayLength==='week'||stayLength==='month')?addDays(r.end,-1):r.end);
+    if(lang==='en') return `${a.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${b.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+    return `${a.getMonth()+1}-р сарын ${a.getDate()} – ${b.getMonth()+1}-р сарын ${b.getDate()}`;
   };
 
   const Month = ({offset})=>{
@@ -267,14 +296,16 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
         <div className="range-days">
           {cells.map((d,i)=>{
             if(!d) return <span key={`e${i}`} className="range-day-empty"/>;
-            const ds=ymd(d), disabled=ds<min;
+            const ds=ymd(d), free=freeForRange(ds,addDays(ds,1)), soldOut=free===0, partial=free>0&&free<GERS.length;
+            const disabled=ds<min||soldOut;
             const start=ds===checkIn, end=ds===checkOut;
             const inRange=ds>checkIn && ds<previewEnd;
             return (
               <button key={ds} type="button" disabled={disabled}
-                className={`range-day ${start?'is-start':''} ${end?'is-end':''} ${inRange?'is-range':''}`}
+                className={`range-day ${start?'is-start':''} ${end?'is-end':''} ${inRange?'is-range':''} ${soldOut?'is-sold-out':''} ${partial?'is-partial':''}`}
                 onMouseEnter={()=>!disabled&&setHovered(ds)} onFocus={()=>!disabled&&setHovered(ds)} onClick={()=>choose(d)}
-                aria-label={d.toLocaleDateString(lang==='en'?'en-US':'mn-MN')} aria-pressed={start||end}>
+                title={soldOut?(lang==='en'?'Fully reserved':'Бүх байр захиалгатай'):(partial?(lang==='en'?`${free} stays left`:`${free} байр сул`):'')}
+                aria-label={`${d.toLocaleDateString(lang==='en'?'en-US':'mn-MN')} · ${soldOut?(lang==='en'?'fully reserved':'дүүрсэн'):(lang==='en'?`${free} available`:`${free} сул`)}`} aria-pressed={start||end}>
                 <span>{d.getDate()}</span>
               </button>
             );
@@ -286,13 +317,10 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
 
   return (
     <div className="range-picker" ref={rootRef}>
-      <div className={`range-trigger ${open?'is-open':''}`}>
-        <button type="button" className={`range-trigger-half ${open&&phase==='checkin'?'is-active':''}`} onClick={()=>openAt('checkin')}>
-          <span>{lang==='en'?'CHECK-IN':'ИРЭХ ӨДӨР'}</span><strong>{fmtDate(checkIn,lang)}</strong>
-        </button>
-        <span className="range-trigger-divider"/>
-        <button type="button" className={`range-trigger-half ${open&&phase==='checkout'?'is-active':''}`} onClick={()=>openAt('checkout')}>
-          <span>{lang==='en'?'CHECKOUT':'БУЦАХ ӨДӨР'}</span><strong>{fmtDate(checkOut,lang)}</strong>
+      <div className={`range-trigger range-trigger-single ${open?'is-open':''}`}>
+        <button type="button" className={`range-trigger-half ${open?'is-active':''}`} onClick={()=>openAt('checkin')}>
+          <span>{lang==='en'?'STAY DATES':'ХОНОГЛОХ ӨДРҮҮД'}</span>
+          <strong><Icons.cal size={16}/>{fmtDate(checkIn,lang)} — {fmtDate(checkOut,lang)} · {nightsBetween(checkIn,checkOut)} {lang==='en'?'nights':'хоног'}</strong>
         </button>
       </div>
       {open && (
@@ -306,6 +334,8 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
               <button type="button" className="range-nav range-nav-prev" onClick={()=>moveMonth(-1)} disabled={!canPrev} aria-label="Previous month">‹</button>
               <button type="button" className="range-nav range-nav-next" onClick={()=>moveMonth(1)} aria-label="Next month">›</button>
               <div className="range-months"><Month offset={0}/><Month offset={1}/></div>
+              <div className="range-availability-note"><span className="availability-dot partial"></span>{lang==='en'?'Limited availability':'Цөөн байр үлдсэн'} <span className="availability-dot sold"></span>{lang==='en'?'Fully reserved':'Бүх байр захиалгатай'}</div>
+              {rangeError && <div className="range-error"><Icons.bell size={16}/>{rangeError}</div>}
               <div className="range-flex-chips" aria-label={lang==='en'?'Date flexibility':'Огнооны уян хатан байдал'}>
                 {[0,1,2,3,7,14].map(n=><button type="button" key={n} className={flexDays===n?'is-active':''} onClick={()=>setFlexDays(n)}>{n===0?(lang==='en'?'Exact dates':'Яг сонгосон'):`± ${n} ${lang==='en'?(n===1?'day':'days'):'өдөр'}`}</button>)}
               </div>
@@ -321,15 +351,28 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='
                 {[
                   ['weekend',lang==='en'?'Weekend':'Амралтын өдрүүд'],
                   ['week',lang==='en'?'Week':'7 хоног'],
-                  ['month',lang==='en'?'Month':'Сар'],
-                ].map(([v,l])=><button type="button" key={v} className={stayLength===v?'is-active':''} onClick={()=>setStayLength(v)}>{l}</button>)}
+                  ['month',lang==='en'?'Month':'Бүтэн сар'],
+                ].map(([v,l])=><button type="button" key={v} className={stayLength===v?'is-active':''} onClick={()=>{setStayLength(v);setFlexMonth(null);}}>{l}</button>)}
               </div>
               <h3>{lang==='en'?'Go anytime':'Хэзээ ч явж болно'}</h3>
               <div className="range-flex-months">
-                {flexibleMonths.map(m=><button type="button" key={ymd(m)} onClick={()=>applyFlexibleMonth(m)}>
+                {flexibleMonths.map(m=><button type="button" key={ymd(m)} className={flexMonth&&ymd(flexMonth)===ymd(m)?'is-active':''} onClick={()=>setFlexMonth(m)}>
                   <Icons.cal size={28}/><strong>{lang==='en'?m.toLocaleDateString('en-US',{month:'long'}):`${m.getMonth()+1}-р сар`}</strong><span>{m.getFullYear()}</span>
                 </button>)}
               </div>
+              {flexMonth && (
+                <div className="range-flex-options">
+                  <div>
+                    <strong>{lang==='en'?'Choose the exact stay':'Яг хоноглох хугацаагаа сонгоно уу'}</strong>
+                    <span>{stayLength==='weekend'?(lang==='en'?'Friday to Sunday':'Баасан–Ням'):(stayLength==='week'?(lang==='en'?'Monday to Sunday':'Даваа–Ням'):(lang==='en'?'Whole selected month':'Сонгосон бүтэн сар'))}</span>
+                  </div>
+                  <div className="range-flex-option-list">
+                    {flexibleRanges(flexMonth).map(r=><button type="button" key={r.start} disabled={!r.available} onClick={()=>applyFlexibleRange(r.start,r.end)}>
+                      <Icons.cal size={17}/><span>{shortRange(r)}</span><b>{r.available?`${nightsBetween(r.start,r.end)} ${lang==='en'?'nights':'хоног'}`:(lang==='en'?'Reserved':'Дүүрсэн')}</b>
+                    </button>)}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
