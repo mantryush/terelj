@@ -250,8 +250,7 @@ function Booking({ lang, t, go, planVariant='map', showToast }){
       {/* filter bar */}
       <div className="card" style={{padding:'16px 18px', marginBottom:20, position:'sticky', top:74, zIndex:20, boxShadow:'var(--sh)'}}>
         <div className="row" style={{gap:16, flexWrap:'wrap', alignItems:'flex-end'}}>
-          <DateField label={t('book.checkin')} value={checkIn} min={today} onChange={setCheckIn}/>
-          <DateField label={t('book.checkout')} value={checkOut} min={addDays(checkIn,1)} onChange={setCheckOut}/>
+          <RangeDatePicker checkIn={checkIn} checkOut={checkOut} onCheckIn={setCheckIn} onCheckOut={setCheckOut} min={today} lang={lang}/>
           <div className="col" style={{gap:5}}>
             <span style={{fontSize:11, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--ink-3)'}}>{t('book.guests')}</span>
             <Stepper value={guests} onChange={setGuests} min={1} max={10}/>

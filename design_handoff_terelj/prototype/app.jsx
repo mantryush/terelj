@@ -23,7 +23,7 @@ function Header({ lang, setLang, t, route, go }){
     <header style={{position:'sticky', top:0, zIndex:50, background:'rgba(241,231,210,0.86)',
       backdropFilter:'blur(16px)', borderBottom:'1px solid var(--line)'}}>
         <div className="wrap row app-header-inner" style={{height:66, justifyContent:'space-between', gap:18}}>
-        <button onClick={()=>go('home')} style={{background:'none', border:'none', padding:0}}><Logo size={36}/></button>
+        <button onClick={()=>go('home')} aria-label="Tenger Eleven Ger Camp" style={{background:'none', border:'none', padding:0}}><Logo size={50}/></button>
 
         {!isStaff && (
           <nav className="row guest-nav" style={{gap:4}}>
@@ -69,8 +69,8 @@ function Footer({ lang, go }){
       <div className="wrap">
         <div className="row" style={{justifyContent:'space-between', flexWrap:'wrap', gap:28, marginBottom:28}}>
           <div className="col" style={{gap:12, maxWidth:300}}>
-            <div style={{filter:'invert(0)'}}><Logo size={34}/></div>
-            <p style={{fontSize:13.5, color:'rgba(241,231,210,0.7)', lineHeight:1.5}}>{lang==='en'?'Gers & wood cabins on the Tuul riverbank, Gorkhi-Terelj National Park.':'Горхи-Тэрэлж байгалийн цогцолборт газар, Туул голын эрэг дэх гэр амралт.'}</p>
+            <Logo size={56} inverted/>
+            <p style={{fontSize:13.5, color:'rgba(241,231,210,0.7)', lineHeight:1.5}}>{lang==='en'?'A peaceful ger camp near Turtle Rock in beautiful Gorkhi-Terelj National Park.':'Үзэсгэлэнт Горхи-Тэрэлжийн Мэлхий хадны ойролцоох тав тухтай гэр кемп.'}</p>
           </div>
           <div className="row" style={{gap:46, flexWrap:'wrap'}}>
             <div className="col" style={{gap:9}}>
@@ -82,12 +82,12 @@ function Footer({ lang, go }){
             <div className="col" style={{gap:9}}>
               <span style={{fontWeight:800, fontSize:13, color:'var(--gold)', textTransform:'uppercase', letterSpacing:'0.08em'}}>{lang==='en'?'Contact':'Холбоо барих'}</span>
               <span style={{fontSize:14, color:'rgba(241,231,210,0.8)'}}>+976 9911-2233</span>
-              <span style={{fontSize:14, color:'rgba(241,231,210,0.8)'}}>terelj@gerresort.mn</span>
+              <span style={{fontSize:14, color:'rgba(241,231,210,0.8)'}}>hello@tengereleven.mn</span>
             </div>
           </div>
         </div>
         <div className="row" style={{justifyContent:'space-between', paddingTop:20, borderTop:'1px solid #3a2e20', flexWrap:'wrap', gap:10}}>
-          <span style={{fontSize:12.5, color:'rgba(241,231,210,0.55)'}}>© 2026 Тэрэлж Ger Resort · {lang==='en'?'Assembled in Mongolia':'Монголд бүтээв'}</span>
+          <span style={{fontSize:12.5, color:'rgba(241,231,210,0.55)'}}>© 2026 Tenger Eleven Ger Camp · {lang==='en'?'Terelj, Mongolia':'Тэрэлж, Монгол'}</span>
           <span style={{fontSize:12.5, color:'rgba(241,231,210,0.55)'}}>{lang==='en'?'Made with care · 🇲🇳':'Хайраар бүтээв · 🇲🇳'}</span>
         </div>
       </div>
@@ -115,7 +115,7 @@ function App(){
 
   // apply accent
   useEffect(()=>{
-    const a = ACCENTS[tw.accent] || ACCENTS.terracotta;
+    const a = ACCENTS[tw.accent] || ACCENTS.sky;
     const r = document.documentElement.style;
     r.setProperty('--rust', a.rust);
     r.setProperty('--rust-deep', a.deep);
@@ -148,7 +148,7 @@ function App(){
         <TweakSection label={lang==='en'?'Accent color':'Үндсэн өнгө'}/>
         <TweakColor label={lang==='en'?'Accent':'Өнгө'} value={ACCENTS[tw.accent].rust}
           options={Object.values(ACCENTS).map(a=>a.rust)}
-          onChange={v=>{ const key=Object.keys(ACCENTS).find(k=>ACCENTS[k].rust===v)||'terracotta'; setTweak('accent',key); }}/>
+          onChange={v=>{ const key=Object.keys(ACCENTS).find(k=>ACCENTS[k].rust===v)||'sky'; setTweak('accent',key); }}/>
       </TweaksPanel>
 
       {toastNode}

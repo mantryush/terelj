@@ -270,9 +270,9 @@ const STR = {
   'nav.admin':      ['Админ','Admin'],
   'nav.bookNow':    ['Захиалах','Book now'],
   // landing
-  'hero.eyebrow':   ['ТЭРЭЛЖ · ХАН ХЭНТИЙ','TERELJ · KHAN KHENTII'],
+  'hero.eyebrow':   ['TENGER ELEVEN · МЭЛХИЙ ХАД','TENGER ELEVEN · TURTLE ROCK'],
   'hero.title':     ['Тэнгэрийн\nдор амар','Rest under\nthe eternal sky'],
-  'hero.sub':       ['Горхи-Тэрэлжийн зүрхэнд, голын эрэг дээр байрлах 20 гэр, модон байшин. Бодит цагийн захиалга — хүссэн гэрээ газрын зураг дээрээс сонго.','20 gers and wood cabins on the riverbank in the heart of Gorkhi-Terelj. Live booking — pick your ger right on the map.'],
+  'hero.sub':       ['Тэрэлжийн үзэсгэлэнт Мэлхий хадны ойролцоо байрлах манай гэр кемпэд байгальтайгаа ойр амраарай. Сул гэрээ огноогоор шалгаж, газрын зураг дээрээс шууд сонгоно.','Stay close to nature at our ger camp near beautiful Turtle Rock in Terelj. Check live availability and choose your ger right on the map.'],
   'hero.cta':       ['Гэр сонгох','Choose a ger'],
   'hero.cta2':      ['Үнэ & багц','Prices'],
   // generic

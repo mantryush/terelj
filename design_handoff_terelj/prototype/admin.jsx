@@ -215,7 +215,7 @@ function Admin({ lang, t, showToast }){
         <div className="row" style={{justifyContent:'space-between', marginBottom:22, flexWrap:'wrap', gap:12}}>
           <div className="col">
             <h1 className="serif" style={{fontSize:34, fontWeight:700}}>{lang==='en'?'Admin':'Админ удирдлага'}</h1>
-            <span className="muted" style={{fontSize:14}}>Тэрэлж Ger Resort · {lang==='en'?'control center':'удирдлагын төв'}</span>
+            <span className="muted" style={{fontSize:14}}>Tenger Eleven Ger Camp · {lang==='en'?'control center':'удирдлагын төв'}</span>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={()=>{ if(confirm(lang==='en'?'Reset all demo data?':'Бүх демо өгөгдлийг шинэчлэх үү?')){ localStorage.removeItem('terelj.bookings.v1'); TJ.seed(true); showToast('Reset ✓'); } }}>
             <Icons.bolt size={15}/> {lang==='en'?'Reset demo':'Демо шинэчлэх'}

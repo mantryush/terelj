@@ -5,24 +5,16 @@ var useState = React.useState;
 var useEffect = React.useEffect;
 var useRef = React.useRef;
 
-/* ---------- Logo: ger silhouette + soyombo-ish flame ---------- */
-function Logo({ size=34, mark=false }){
+/* ---------- Tenger Eleven brand ---------- */
+function Logo({ size=48, mark=false, inverted=false }){
   return (
-    <div className="row gap-3" style={{alignItems:'center'}}>
-      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="23" fill="#2A2017"/>
-        {/* ger roof */}
-        <path d="M10 27 L24 13 L38 27 Z" fill="none" stroke="#C99536" strokeWidth="2.2" strokeLinejoin="round"/>
-        <rect x="14" y="27" width="20" height="11" rx="1.5" fill="none" stroke="#C99536" strokeWidth="2.2"/>
-        {/* door */}
-        <rect x="21" y="31" width="6" height="7" rx="1" fill="#B8472A"/>
-        {/* toono lines */}
-        <path d="M24 13 V8 M19 16 L17 11 M29 16 L31 11" stroke="#B8472A" strokeWidth="1.6" strokeLinecap="round"/>
-      </svg>
+    <div className="row brand-logo" style={{alignItems:'center', gap:10}}>
+      <img className="brand-logo-mark" src="assets/tenger-eleven-mark.png" alt="" width={size} height={size}
+        style={{width:size, height:size, objectFit:'contain', flex:'none'}}/>
       {!mark && (
         <div className="col" style={{lineHeight:1}}>
-          <span className="serif" style={{fontSize:size*0.62, fontWeight:700, letterSpacing:'-0.01em', color:'var(--ink)'}}>Тэрэлж</span>
-          <span style={{fontSize:size*0.24, fontWeight:700, letterSpacing:'0.24em', color:'var(--rust)', textTransform:'uppercase', marginTop:2}}>Ger Resort</span>
+          <span className="serif brand-logo-name" style={{fontSize:size*0.44, fontWeight:700, letterSpacing:'-0.02em', color:inverted?'var(--paper)':'var(--ink)'}}>Tenger Eleven</span>
+          <span style={{fontSize:size*0.18, fontWeight:800, letterSpacing:'0.22em', color:inverted?'var(--gold)':'var(--rust)', textTransform:'uppercase', marginTop:4}}>Ger Camp</span>
         </div>
       )}
     </div>
@@ -195,7 +187,158 @@ function DateField({ value, onChange, min, label }){
   );
 }
 
+/* ---------- Airbnb-inspired range date picker ---------- */
+function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, min, lang='mn' }){
+  const rootRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState('dates');
+  const [phase, setPhase] = useState('checkin');
+  const [hovered, setHovered] = useState(null);
+  const [flexDays, setFlexDays] = useState(0);
+  const [stayLength, setStayLength] = useState('weekend');
+  const startMonth = ()=>{ const d=parseYMD(checkIn||min); return new Date(d.getFullYear(),d.getMonth(),1); };
+  const [cursor, setCursor] = useState(startMonth);
+
+  useEffect(()=>{
+    const close = (e)=>{ if(rootRef.current && !rootRef.current.contains(e.target)) setOpen(false); };
+    const esc = (e)=>{ if(e.key==='Escape') setOpen(false); };
+    document.addEventListener('mousedown', close);
+    document.addEventListener('keydown', esc);
+    return ()=>{ document.removeEventListener('mousedown', close); document.removeEventListener('keydown', esc); };
+  }, []);
+
+  const openAt = (nextPhase)=>{
+    setPhase(nextPhase);
+    const base = parseYMD(nextPhase==='checkout' ? checkOut : checkIn);
+    setCursor(new Date(base.getFullYear(),base.getMonth(),1));
+    setOpen(true);
+  };
+  const choose = (date)=>{
+    const picked=ymd(date);
+    if(phase==='checkin'){
+      onCheckIn(picked);
+      if(!checkOut || picked>=checkOut) onCheckOut(addDays(picked,1));
+      setPhase('checkout');
+      setHovered(null);
+      return;
+    }
+    if(picked<=checkIn){
+      onCheckIn(picked);
+      onCheckOut(addDays(picked,1));
+      setPhase('checkout');
+    } else {
+      onCheckOut(picked);
+      setOpen(false);
+      setHovered(null);
+    }
+  };
+  const monthTitle = (d)=> lang==='en'
+    ? d.toLocaleDateString('en-US',{month:'long',year:'numeric'})
+    : `${d.getFullYear()} оны ${d.getMonth()+1}-р сар`;
+  const weekday = lang==='en' ? ['Mo','Tu','We','Th','Fr','Sa','Su'] : ['Да','Мя','Лх','Пү','Ба','Бя','Ня'];
+  const canPrev = ymd(new Date(cursor.getFullYear(),cursor.getMonth()+1,0)) >= min;
+  const moveMonth = (n)=>setCursor(new Date(cursor.getFullYear(),cursor.getMonth()+n,1));
+  const previewEnd = phase==='checkout' && hovered && hovered>checkIn ? hovered : checkOut;
+
+  const flexibleMonths = Array.from({length:8},(_,i)=>new Date(new Date().getFullYear(),new Date().getMonth()+i,1));
+  const applyFlexibleMonth = (month)=>{
+    const monthStart=ymd(month);
+    let start=monthStart<min ? min : monthStart;
+    if(stayLength==='weekend'){
+      let d=parseYMD(start);
+      while(d.getDay()!==5) d.setDate(d.getDate()+1);
+      start=ymd(d);
+    }
+    const nights={weekend:2,week:7,month:30}[stayLength];
+    onCheckIn(start);
+    onCheckOut(addDays(start,nights));
+    setOpen(false);
+  };
+
+  const Month = ({offset})=>{
+    const m=new Date(cursor.getFullYear(),cursor.getMonth()+offset,1);
+    const leading=(m.getDay()+6)%7;
+    const total=new Date(m.getFullYear(),m.getMonth()+1,0).getDate();
+    const cells=Array.from({length:leading+total},(_,i)=>i<leading?null:new Date(m.getFullYear(),m.getMonth(),i-leading+1));
+    return (
+      <div className={`range-month range-month-${offset}`}>
+        <h3 className="range-month-title">{monthTitle(m)}</h3>
+        <div className="range-weekdays">{weekday.map(w=><span key={w}>{w}</span>)}</div>
+        <div className="range-days">
+          {cells.map((d,i)=>{
+            if(!d) return <span key={`e${i}`} className="range-day-empty"/>;
+            const ds=ymd(d), disabled=ds<min;
+            const start=ds===checkIn, end=ds===checkOut;
+            const inRange=ds>checkIn && ds<previewEnd;
+            return (
+              <button key={ds} type="button" disabled={disabled}
+                className={`range-day ${start?'is-start':''} ${end?'is-end':''} ${inRange?'is-range':''}`}
+                onMouseEnter={()=>!disabled&&setHovered(ds)} onFocus={()=>!disabled&&setHovered(ds)} onClick={()=>choose(d)}
+                aria-label={d.toLocaleDateString(lang==='en'?'en-US':'mn-MN')} aria-pressed={start||end}>
+                <span>{d.getDate()}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="range-picker" ref={rootRef}>
+      <div className={`range-trigger ${open?'is-open':''}`}>
+        <button type="button" className={`range-trigger-half ${open&&phase==='checkin'?'is-active':''}`} onClick={()=>openAt('checkin')}>
+          <span>{lang==='en'?'CHECK-IN':'ИРЭХ ӨДӨР'}</span><strong>{fmtDate(checkIn,lang)}</strong>
+        </button>
+        <span className="range-trigger-divider"/>
+        <button type="button" className={`range-trigger-half ${open&&phase==='checkout'?'is-active':''}`} onClick={()=>openAt('checkout')}>
+          <span>{lang==='en'?'CHECKOUT':'БУЦАХ ӨДӨР'}</span><strong>{fmtDate(checkOut,lang)}</strong>
+        </button>
+      </div>
+      {open && (
+        <div className="range-popover rise" role="dialog" aria-label={lang==='en'?'Choose dates':'Огноо сонгох'}>
+          <div className="range-mode-tabs">
+            <button type="button" className={mode==='dates'?'is-active':''} onClick={()=>setMode('dates')}>{lang==='en'?'Dates':'Огноо'}</button>
+            <button type="button" className={mode==='flexible'?'is-active':''} onClick={()=>setMode('flexible')}>{lang==='en'?'Flexible':'Уян хатан'}</button>
+          </div>
+          {mode==='dates' ? (
+            <>
+              <button type="button" className="range-nav range-nav-prev" onClick={()=>moveMonth(-1)} disabled={!canPrev} aria-label="Previous month">‹</button>
+              <button type="button" className="range-nav range-nav-next" onClick={()=>moveMonth(1)} aria-label="Next month">›</button>
+              <div className="range-months"><Month offset={0}/><Month offset={1}/></div>
+              <div className="range-flex-chips" aria-label={lang==='en'?'Date flexibility':'Огнооны уян хатан байдал'}>
+                {[0,1,2,3,7,14].map(n=><button type="button" key={n} className={flexDays===n?'is-active':''} onClick={()=>setFlexDays(n)}>{n===0?(lang==='en'?'Exact dates':'Яг сонгосон'):`± ${n} ${lang==='en'?(n===1?'day':'days'):'өдөр'}`}</button>)}
+              </div>
+              <div className="range-footer">
+                <div><strong>{nightsBetween(checkIn,checkOut)} {lang==='en'?'nights':'хоног'}</strong><span>{fmtDate(checkIn,lang)} — {fmtDate(checkOut,lang)}{flexDays?` · ±${flexDays}`:''}</span></div>
+                <button type="button" className="btn btn-dark btn-sm" onClick={()=>setOpen(false)}>{lang==='en'?'Done':'Болсон'}</button>
+              </div>
+            </>
+          ) : (
+            <div className="range-flexible-panel">
+              <h3>{lang==='en'?'How long would you like to stay?':'Хэр удаан амрах вэ?'}</h3>
+              <div className="range-stay-length">
+                {[
+                  ['weekend',lang==='en'?'Weekend':'Амралтын өдрүүд'],
+                  ['week',lang==='en'?'Week':'7 хоног'],
+                  ['month',lang==='en'?'Month':'Сар'],
+                ].map(([v,l])=><button type="button" key={v} className={stayLength===v?'is-active':''} onClick={()=>setStayLength(v)}>{l}</button>)}
+              </div>
+              <h3>{lang==='en'?'Go anytime':'Хэзээ ч явж болно'}</h3>
+              <div className="range-flex-months">
+                {flexibleMonths.map(m=><button type="button" key={ymd(m)} onClick={()=>applyFlexibleMonth(m)}>
+                  <Icons.cal size={28}/><strong>{lang==='en'?m.toLocaleDateString('en-US',{month:'long'}):`${m.getMonth()+1}-р сар`}</strong><span>{m.getFullYear()}</span>
+                </button>)}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 Object.assign(window, {
   Logo, Icon, Icons, KheeDivider, LangToggle, StatusBadge, STATUS_META,
-  useCountdown, HoldTimer, Modal, useToast, Stepper, DateField,
+  useCountdown, HoldTimer, Modal, useToast, Stepper, DateField, RangeDatePicker,
 });

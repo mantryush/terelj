@@ -21,7 +21,7 @@ for (const file of files) {
 }
 
 const css = readFileSync('design_handoff_terelj/prototype/styles.css', 'utf8');
-for (const token of ['--paper:      #F1E7D2', '--rust:       #B8472A', '--st-hold-bg: #F3E2B5', '@media (max-width: 980px)']) {
+for (const token of ['--paper:      #F1E7D2', '--rust:       #2E6E8E', '--st-hold-bg: #F3E2B5', '@media (max-width: 980px)']) {
   if (!css.includes(token)) throw new Error(`Missing CSS token/check: ${token}`);
 }
 
@@ -29,5 +29,13 @@ const store = readFileSync('design_handoff_terelj/prototype/store.jsx', 'utf8');
 for (const check of ['const GERS = [', 'const SERVICES = [', 'statusForRange', 'walkIn']) {
   if (!store.includes(check)) throw new Error(`Missing store check: ${check}`);
 }
+
+const components = readFileSync('design_handoff_terelj/prototype/components.jsx', 'utf8');
+for (const check of ['assets/tenger-eleven-mark.png', 'function RangeDatePicker', 'range-popover']) {
+  if (!components.includes(check)) throw new Error(`Missing brand/calendar check: ${check}`);
+}
+
+const booking = readFileSync('design_handoff_terelj/prototype/booking.jsx', 'utf8');
+if (!booking.includes('<RangeDatePicker')) throw new Error('Booking page is missing the range date picker');
 
 console.log('Smoke checks passed');

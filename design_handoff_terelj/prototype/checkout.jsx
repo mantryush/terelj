@@ -182,7 +182,7 @@ function Checkout({ lang, t, go, bookingId, showToast }){
               </div>
             ) : (
               <div className="col" style={{gap:10, padding:'4px 2px'}}>
-                {[[lang==='en'?'Bank':'Банк','Хаан банк'],[lang==='en'?'Account':'Данс','5004 1122 33'],[lang==='en'?'Name':'Нэр','Тэрэлж Ger Resort ХХК'],[lang==='en'?'Amount':'Дүн',money(total)],[lang==='en'?'Note':'Гүйлгээний утга',bookingCode(bookingId)]].map(([l,r],i)=>(
+                {[[lang==='en'?'Bank':'Банк','Хаан банк'],[lang==='en'?'Account':'Данс','5004 1122 33'],[lang==='en'?'Name':'Нэр','Tenger Eleven Ger Camp'],[lang==='en'?'Amount':'Дүн',money(total)],[lang==='en'?'Note':'Гүйлгээний утга',bookingCode(bookingId)]].map(([l,r],i)=>(
                   <div key={i} className="row" style={{justifyContent:'space-between', padding:'10px 14px', background:'var(--card-2)', borderRadius:10}}>
                     <span className="faint" style={{fontSize:13}}>{l}</span>
                     <span className="mono" style={{fontWeight:700}}>{r}</span>
