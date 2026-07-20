@@ -250,10 +250,13 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
         return;
       }
       onCheckOut(picked);
-      setOpen(false);
       setHovered(null);
-      if(onComplete) setTimeout(onComplete,30);
+      setRangeError('');
     }
+  };
+  const finishSelection = ()=>{
+    setOpen(false);
+    if(onComplete) setTimeout(onComplete,30);
   };
   const monthTitle = (d)=> lang==='en'
     ? d.toLocaleDateString('en-US',{month:'long',year:'numeric'})
@@ -356,7 +359,7 @@ function RangeDatePicker({ checkIn, checkOut, onCheckIn, onCheckOut, onComplete,
               </div>
               <div className="range-footer">
                 <div><strong>{nightsBetween(checkIn,checkOut)} {lang==='en'?'nights':'хоног'}</strong><span>{fmtDate(checkIn,lang)} — {fmtDate(checkOut,lang)}{flexDays?` · ±${flexDays}`:''}</span></div>
-                <button type="button" className="btn btn-dark btn-sm" onClick={()=>setOpen(false)}>{lang==='en'?'Done':'Болсон'}</button>
+                <button type="button" className="btn btn-dark btn-sm" onClick={finishSelection}>{lang==='en'?'Done':'Болсон'}</button>
               </div>
             </>
           ) : (
